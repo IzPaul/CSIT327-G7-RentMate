@@ -4,21 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - RentMate</title>
+    <title>Update Maintenance Request | RentMate</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
+    <!-- Sidebar (same as maintenance list) -->
     <div class="sidebar">
         <div class="nav-section">
             <div class="nav-title">Navigation</div>
-            <a href="{% url 'home' %}" class="nav-item active">
+            <a href="{% url 'home' %}" class="nav-item">
                 <svg fill="currentColor" viewBox="0 0 20 20">
                     <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                 </svg>
                 Dashboard
             </a>
             <a href="{% url 'tenant_list' %}" class="nav-item">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
                 </svg>
                 Tenants
@@ -27,7 +28,7 @@
 
         <div class="nav-section">
             <div class="nav-title">Management</div>
-            <a href="{% url 'landlord_maintenance_list' %}" class="nav-item">
+            <a href="{% url 'landlord_maintenance_list' %}" class="nav-item active">
                 <svg fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
                 </svg>
@@ -48,59 +49,58 @@
         </div>
     </div>
 
+    <!-- Main Content (Update Form) -->
     <div class="main-content">
         <div class="header">
-            <h1>Dashboard</h1>
-            <div class="user-avatar"></div>
-        </div>
-
-        <div class="dashboard-cards">
-            <div class="card">
-                <div class="card-label">Latest Notice</div>
-                <div class="card-title">Rent Increase</div>
-                <div class="card-subtitle green">New Notice!</div>
-            </div>
-
-            <div class="card">
-                <div class="card-label">Lease Ends In</div>
-                <div class="card-title">16 days</div>
-                <div class="card-subtitle">October 5, 2025</div>
-            </div>
-
-            <div class="card">
-                <div class="card-label">Outstanding Balance</div>
-                <div class="card-title">₱43,000</div>
-                <div class="card-subtitle green">+ 2.4% this month</div>
-            </div>
-
-            <div class="card">
-                <div class="card-label">Maintenance Requests</div>
-                <div class="card-title">{{ requests.count }}</div>
-                <div class="card-subtitle">{{ pending_count }} Pending</div>
+            <h1>Update Maintenance Request</h1>
+            <div class="subtitle">
+                Update remarks or completion date for this maintenance request.
             </div>
         </div>
 
-        <div class="maintenance-section">
-    <h2>Maintenance Requests</h2>
-
-    {% if requests %}
-        {% for req in requests %}
-        <div class="request-item">
-            <div class="request-info">
-                <div>
-                    <span class="request-title">{{ req.maintenance_type }}</span>
-                    <span class="request-date">{{ req.date_requested|date:"M d, Y" }}</span>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
                 </div>
-                <span class="status-badge {% if req.request_status == 'Pending' %}pending{% elif req.request_status == 'Approved' %}approved{% else %}resolved{% endif %}">
-                    {{ req.request_status }}
-                </span>
+            {% endfor %}
+        {% endif %}
+
+        <div class="form-container">
+            <div class="request-details">
+                <h2>Request Details</h2>
+                <p><strong>Request ID:</strong> {{ request_item.id }}</p>
+                <p><strong>Tenant:</strong> {{ request_item.requester.first_name }} {{ request_item.requester.last_name }}</p>
+                <p><strong>Unit:</strong> {{ request_item.requester.unit }}</p>
+                <p><strong>Type:</strong> {{ request_item.maintenance_type }}</p>
+                <p><strong>Description:</strong> {{ request_item.description }}</p>
+                <p><strong>Date Requested:</strong> {{ request_item.date_requested }}</p>
             </div>
-            <div class="request-actions">
-                <a href="{% url 'landlord_maintenance_update' req.id %}" class="btn btn-edit">VIEW / UPDATE</a>
-            </div>
+
+            <form method="post" class="update-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_remarks">Remarks</label>
+                    <select id="id_remarks" name="remarks" class="form-control">
+                        <option value="Pending" {% if request_item.remarks == "Pending" %}selected{% endif %}>Pending</option>
+                        <option value="Done" {% if request_item.remarks == "Done" %}selected{% endif %}>Done</option>
+                        <option value="Canceled" {% if request_item.remarks == "Canceled" %}selected{% endif %}>Canceled</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                        <label for="id_completion_date">Completion Date</label>
+                        <input type="date" id="id_completion_date" name="completion_date" 
+                        value="{{ request_item.completion_date|date:'Y-m-d' }}" class="form-control">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">Save Updates</button>
+                    <a href="{% url 'landlord_maintenance_list' %}" class="btn-cancel">Cancel</a>
+                </div>
+            </form>
         </div>
-        {% endfor %}
-    {% else %}
-        <p>No maintenance requests available.</p>
-    {% endif %}
-</div>
+    </div>
+</body>
+</html>

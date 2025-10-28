@@ -18,31 +18,25 @@ class TenantRegisterForm(forms.ModelForm):
             'lease_end': forms.DateInput(attrs={'type': 'date'}),
         }
 
-    def __init__(self, *args, **kwargs):
-        self.instance = kwargs.get('instance', None)
-        super().__init__(*args, **kwargs)
-        if not self.instance:
-            self.fields['password'].initial = ''
-
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        qs = Tenant.objects.filter(email=email, is_active=True)
+        qs = Tenant.objects.filter(email=email)
         if self.instance:
             qs = qs.exclude(id=self.instance.id)
         if qs.exists():
-            raise forms.ValidationError('Email is already used by an active tenant.')
+            raise forms.ValidationError('Email already used by another tenant.')
         return email
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
         if re.search(r'[^A-Za-z]', first_name):
-            raise forms.ValidationError('First name cannot contain numbers or special characters.')
+            raise forms.ValidationError('First name cannot contain numbers or symbols.')
         return first_name
 
     def clean_last_name(self):
         last_name = self.cleaned_data.get('last_name')
         if re.search(r'[^A-Za-z]', last_name):
-            raise forms.ValidationError('Last name cannot contain numbers or special characters.')
+            raise forms.ValidationError('Last name cannot contain numbers or symbols.')
         return last_name
 
     def clean_phone_number(self):
@@ -50,14 +44,6 @@ class TenantRegisterForm(forms.ModelForm):
         if re.search(r'[a-zA-Z]', phone_number):
             raise forms.ValidationError('Phone number must not contain letters.')
         return phone_number
-
-    def clean(self):
-        cleaned_data = super().clean()
-        lease_start = cleaned_data.get('lease_start')
-        lease_end = cleaned_data.get('lease_end')
-        if lease_start and lease_end and lease_end < lease_start:
-            raise forms.ValidationError("Lease end date cannot be before start date.")
-        return cleaned_data
 
     def save(self, commit=True):
         tenant = super().save(commit=False)
@@ -76,20 +62,33 @@ class MaintenanceRequestForm(forms.ModelForm):
         ('Others', 'Others'),
     ]
     maintenance_type = forms.ChoiceField(
-        required=True,
         choices=MAINTENANCE_CHOICES,
-        label="Choose a Maintenance Option",
-        widget=forms.Select(attrs={'class': 'form-group'})
+        widget=forms.Select(attrs={'class': 'form-control'})
     )
     other_description = forms.CharField(
         required=False,
-        widget=forms.Textarea(attrs={'placeholder': 'If others, please provide a description','rows': 2})
+        widget=forms.Textarea(attrs={'placeholder': 'If Others, describe...', 'rows': 2})
     )
     description = forms.CharField(
-        required=True,
-        widget=forms.Textarea(attrs={'placeholder': 'Enter description of the Issue','rows': 4})
+        widget=forms.Textarea(attrs={'placeholder': 'Describe the issue...', 'rows': 4})
     )
 
     class Meta:
         model = MaintenanceRequest
         fields = ['maintenance_type', 'other_description', 'description']
+
+
+class LandlordMaintenanceUpdateForm(forms.ModelForm):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('In Progress', 'In Progress'),
+        ('Approved', 'Approved'),
+        ('Completed', 'Completed'),
+    ]
+    request_status = forms.ChoiceField(choices=STATUS_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    completion_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    remarks = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
+
+    class Meta:
+        model = MaintenanceRequest
+        fields = ['request_status', 'completion_date', 'remarks']

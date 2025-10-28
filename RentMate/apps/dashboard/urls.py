@@ -9,10 +9,19 @@ urlpatterns = [
     path('tenant/delete/<int:tenant_id>/', views.delete_tenant, name='delete_tenant'),
 
     # Tenant Dashboard
-    path('tenant-home/', views.tenant_home_view, name='tenant_home'),
+    path('tenant-home/', views.tenant_home, name='tenant_home'),
     path('tenant-home/maintenance/', views.tenant_maintenance_add_view, name='tenant_maintenance'),
+
+    # Tenant Maintenance List/Edit/Delete
+    path('tenant/maintenance/list/', views.tenant_maintenance_list_view, name='tenant_maintenance_list'),
+    path('tenant/maintenance/edit/<int:request_id>/', views.tenant_maintenance_edit_view, name='tenant_maintenance_edit'),
+    path('tenant/maintenance/delete/<int:request_id>/', views.tenant_maintenance_delete_view, name='tenant_maintenance_delete'),
 
     # Tenant Auth
     path('tenant/login/', views.tenant_login, name='tenant_login'),
     path('tenant/change-password/', views.tenant_change_password, name='tenant_change_password'),
+
+    # Landlord Maintenance Management
+    path('landlord/maintenance-list/', views.landlord_maintenance_list_view, name='landlord_maintenance_list'),
+    path('landlord/maintenance-update/<int:request_id>/', views.landlord_maintenance_update_view, name='landlord_maintenance_update'),
 ]
