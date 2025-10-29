@@ -60,7 +60,7 @@ def tenant_login(request):
     return render(request, 'logins/tenant-login.html')
 
 def index(request):
-    return render(request, 'index.html')  # Render the main landing page
+    return render(request, 'index.html')  # This will look in the root templates directory first
 
 @transaction.atomic #If an error occurs within the block, no changes is saved to the database
 def landlord_register(request):
