@@ -1,3 +1,6 @@
-Django==5.2.7  # Replace with your Django version
-djangorestframework==3.14.0  # Example dependency for DRF
-# Add other dependencies here
+Django==5.2.7
+djangorestframework==3.14.0
+psycopg2-binary==2.9.7        # if using PostgreSQL in production
+gunicorn==20.1.0             # WSGI server for deployment
+python-dotenv==1.0.0         # if you load .env in production
+# add any other project dependencies here
