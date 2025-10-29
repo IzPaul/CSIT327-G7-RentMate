@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - RentMate</title>
+    <title>Tenant Dashboard - RentMate</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
@@ -20,10 +20,8 @@
             </a>
             <a href="#" class="nav-item">
                 <svg width="200" height="150" viewBox="0 0 200 150">
-                  <rect x="10" y="10" width="180" height="130" rx="15" ry="15" fill="#f0f0f0" stroke="#ccc" stroke-width="2"/>
-                  <text x="100" y="85" font-family="Arial, sans-serif" font-size="110" text-anchor="middle" alignment-baseline="middle">
-                    $
-                  </text>
+                    <rect x="10" y="10" width="180" height="130" rx="15" ry="15" fill="#f0f0f0" stroke="#ccc" stroke-width="2"/>
+                    <text x="100" y="85" font-family="Arial, sans-serif" font-size="110" text-anchor="middle" alignment-baseline="middle">$</text>
                 </svg>
                 Payment
             </a>
@@ -55,7 +53,7 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <h1>Dashboard</h1>
+            <h1>Welcome, {{ tenant.first_name }}</h1>
             <div class="user-avatar"></div>
         </div>
 
@@ -66,57 +64,57 @@
                 <div class="card-title">Rent Increase</div>
                 <div class="card-subtitle green">New Notice!</div>
             </div>
-
             <div class="card">
                 <div class="card-label">Lease Ends In</div>
                 <div class="card-title">16 days</div>
                 <div class="card-subtitle">October 5, 2025</div>
             </div>
-
             <div class="card">
                 <div class="card-label">Outstanding Balance</div>
                 <div class="card-title">₱43,000</div>
                 <div class="card-subtitle green">+ 2.4% this month</div>
             </div>
-
             <div class="card">
                 <div class="card-label">Maintenance Requests</div>
-                <div class="card-title">1</div>
-                <div class="card-subtitle">1 Pending</div>
+                <div class="card-title">{{ requests.count }}</div>
+                <div class="card-subtitle">
+                    {{ pending_count }} Pending • {{ approved_count }} Approved • {{ completed_count }} Completed
+                </div>
             </div>
         </div>
 
         <!-- Maintenance Requests Section -->
         <div class="maintenance-section">
-            <h2>Maintenance Requests</h2>
-
-            <div class="request-item">
-                <div class="request-info">
-                    <div>
-                        <span class="request-title">Plumbing</span>
-                        <span class="request-date">4/21/25</span>
-                    </div>
-                    <span class="status-badge resolved">Resolved</span>
-                </div>
-                <div class="request-actions">
-                    <button class="btn btn-edit">EDIT</button>
-                    <button class="btn btn-delete">DELETE</button>
-                </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Maintenance Requests</h2>
+                <a href="{% url 'tenant_maintenance' %}" class="btn btn-add">+ New Request</a>
             </div>
 
-            <div class="request-item">
-                <div class="request-info">
-                    <div>
-                        <span class="request-title">Electrical</span>
-                        <span class="request-date">6/12/25</span>
+            {% if requests %}
+                {% for req in requests %}
+                    <div class="request-item">
+                        <div class="request-info">
+                            <div>
+                                <span class="request-title">{{ req.maintenance_type }}</span>
+                                <span class="request-date">{{ req.date_requested }}</span>
+                            </div>
+                            {% if req.request_status == "Completed" %}
+                                <span class="status-badge resolved">Completed</span>
+                            {% elif req.request_status == "Approved" %}
+                                <span class="status-badge approved">Approved</span>
+                            {% else %}
+                                <span class="status-badge pending">Pending</span>
+                            {% endif %}
+                        </div>
+                        <div class="request-actions">
+                            <a href="{% url 'tenant_maintenance_edit' req.id %}" class="btn btn-edit">EDIT</a>
+                            <a href="{% url 'tenant_maintenance_delete' req.id %}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this request?');">DELETE</a>
+                        </div>
                     </div>
-                    <span class="status-badge pending">Pending</span>
-                </div>
-                <div class="request-actions">
-                    <button class="btn btn-edit">EDIT</button>
-                    <button class="btn btn-delete">DELETE</button>
-                </div>
-            </div>
+                {% endfor %}
+            {% else %}
+                <p>No maintenance requests yet. <a href="{% url 'tenant_maintenance' %}">Submit one here.</a></p>
+            {% endif %}
         </div>
     </div>
 </body>

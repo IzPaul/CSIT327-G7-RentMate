@@ -8,7 +8,6 @@ class Tenant(models.Model):
     address = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=100)
     password = models.CharField(max_length=128)
-
     unit = models.CharField(max_length=50)
     lease_start = models.DateField()
     lease_end = models.DateField()
@@ -40,6 +39,8 @@ class MaintenanceRequest(models.Model):
     request_status = models.CharField(max_length=20, default="Pending")
     other_description = models.TextField(blank=True, default="")
     description = models.TextField()
+    completion_date = models.DateField(blank=True, null=True)
+    remarks = models.TextField(blank=True, default="")
 
     def __str__(self):
         return f"{self.maintenance_type} - {self.date_requested}"
