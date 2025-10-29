@@ -1,6 +1,6 @@
 Django==5.2.7
 djangorestframework==3.14.0
-psycopg2-binary==2.9.7        # if using PostgreSQL in production
+psycopg2-binary==2.9.7; sys_platform != "win32"  # install on Linux/macOS only
 gunicorn==21.2.0             # WSGI server for deployment
 python-dotenv==1.0.0         # if you load .env in production
 whitenoise==6.6.0
