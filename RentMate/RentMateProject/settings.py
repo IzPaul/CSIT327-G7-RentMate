@@ -20,13 +20,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xj@@)dki9y=capvnpx^2qurhq2$402$7v(y(@t6u&x#7gw(rou'
+SECRET_KEY =env ('DJANGO_SECRET_KEY')
+DEBUG = env('DJANGO_DEBUG', default=True)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['localhost','127.0.0.1', '.onrender.com']
+CSRF_TRUSTED_ORIGINS = ['http://*.onreder.com']
 
 # Application definition
 
@@ -134,6 +134,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'bargamentojunior34@gmail.com'  # your Gmail
-EMAIL_HOST_PASSWORD = 'lbxgazpadxbuhstg' # app password generated from Google Account
+EMAIL_HOST_USER = 'rrentmate@gmail.com'  # your Gmail
+EMAIL_HOST_PASSWORD = 'fklsdkibesbcofba' # app password generated from Google Account
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
