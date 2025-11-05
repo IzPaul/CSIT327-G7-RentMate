@@ -63,7 +63,8 @@ MIDDLEWARE = [
 import dj_database_url
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
+        # Use a writable temp path on Render for SQLite by default
+        default='sqlite:////var/tmp/db.sqlite3',
         conn_max_age=600
     )
 }
@@ -115,13 +116,7 @@ WSGI_APPLICATION = 'RentMateProject.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# (Configured above via dj_database_url)
 
 
 # Password validation
@@ -193,13 +188,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Database configuration (keep your existing database config)
-DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
-        conn_max_age=600
-    )
-}
+# Database configuration (single source defined above via dj_database_url)
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
