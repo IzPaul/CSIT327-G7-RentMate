@@ -183,6 +183,11 @@
             color: #1a1a1a;
         }
 
+        .status-badge.approved {
+            background-color: #38bdf8;
+            color: #1a1a1a;
+        }
+
         .status-badge.pending {
             background-color: #666;
             color: white;
@@ -193,6 +198,18 @@
             gap: 10px;
         }
 
+        /* Inline link in maintenance empty state */
+        .maintenance-section p a {
+            color: #22c55e;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .maintenance-section p a:hover {
+            color: #16a34a;
+            text-decoration: underline;
+        }
+
         .btn {
             padding: 10px 25px;
             border: none;
@@ -201,6 +218,16 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+        }
+
+        .btn.btn-add {
+            background-color: #22c55e;
+            color: #0b2514;
+        }
+
+        .btn.btn-add:hover {
+            background-color: #16a34a;
+            color: #081a0e;
         }
 
         .btn-edit {

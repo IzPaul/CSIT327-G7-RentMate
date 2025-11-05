@@ -7,8 +7,8 @@ from django.utils import timezone
 from django.contrib.auth.hashers import check_password, make_password
 from datetime import datetime
 
-from .forms import TenantRegisterForm, MaintenanceRequestForm, LandlordMaintenanceUpdateForm
-from .models import Tenant, MaintenanceRequest
+from .forms import TenantRegisterForm, MaintenanceRequestForm, LandlordMaintenanceUpdateForm, PaymentForm
+from .models import Tenant, MaintenanceRequest, Payment
 
 # --- LANDLORD SIDE ---
 
@@ -191,6 +191,36 @@ def tenant_maintenance_add_view(request):
         form = MaintenanceRequestForm()
 
     return render(request, 'home_app_tenant/tenant-maintenance.html', {'form': form})
+
+
+# --- TENANT PAYMENTS ---
+
+def tenant_payment(request):
+    tenant_id = request.session.get("tenant_id")
+    if not tenant_id:
+        return redirect('tenant_login')
+
+    tenant = Tenant.objects.get(id=tenant_id)
+
+    if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            Payment.objects.create(
+                tenant=tenant,
+                title=form.cleaned_data['title'],
+                method=form.cleaned_data['method'],
+                amount=form.cleaned_data['amount'],
+                reference_number=form.cleaned_data['reference_number'],
+            )
+            messages.success(request, 'Payment submitted successfully!')
+            return redirect('tenant_home')
+    else:
+        form = PaymentForm()
+
+    return render(request, 'home_app_tenant/tenant-payment.html', {
+        'form': form,
+        'tenant': tenant,
+    })
 
 def tenant_maintenance_edit_view(request, request_id):
     tenant_id = request.session.get("tenant_id")

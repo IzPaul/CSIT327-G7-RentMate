@@ -1,5 +1,5 @@
 from django import forms
-from .models import Tenant, MaintenanceRequest
+from .models import Tenant, MaintenanceRequest, Payment
 import re
 from django.contrib.auth.hashers import make_password
 
@@ -92,3 +92,33 @@ class LandlordMaintenanceUpdateForm(forms.ModelForm):
     class Meta:
         model = MaintenanceRequest
         fields = ['request_status', 'completion_date', 'remarks']
+
+
+class PaymentForm(forms.ModelForm):
+    METHOD_CHOICES = [
+        ("BPI", "BPI"),
+        ("BDO", "BDO"),
+        ("GCash", "GCash"),
+        ("Other", "Other"),
+    ]
+
+    title = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Payment Title'}))
+    method = forms.ChoiceField(choices=METHOD_CHOICES, widget=forms.Select())
+    amount = forms.DecimalField(max_digits=10, decimal_places=2, min_value=0.01)
+    reference_number = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Reference Number'}))
+
+    class Meta:
+        model = Payment
+        fields = ['title', 'method', 'amount', 'reference_number']
+
+    def clean_title(self):
+        title = self.cleaned_data.get('title', '').strip()
+        if not title:
+            raise forms.ValidationError('Payment Title is required.')
+        return title
+
+    def clean_reference_number(self):
+        ref = self.cleaned_data.get('reference_number', '').strip()
+        if not re.match(r'^[A-Za-z0-9\-]{6,50}$', ref):
+            raise forms.ValidationError('Reference Number must be 6-50 chars, letters/numbers/dashes only.')
+        return ref

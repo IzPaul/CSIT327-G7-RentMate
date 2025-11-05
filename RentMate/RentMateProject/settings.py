@@ -63,7 +63,6 @@ MIDDLEWARE = [
 import dj_database_url
 DATABASES = {
     'default': dj_database_url.config(
-        # Use a writable temp path on Render for SQLite by default
         default='sqlite:////var/tmp/db.sqlite3',
         conn_max_age=600
     )

@@ -44,3 +44,21 @@ class MaintenanceRequest(models.Model):
 
     def __str__(self):
         return f"{self.maintenance_type} - {self.date_requested}"
+
+
+class Payment(models.Model):
+    METHOD_CHOICES = [
+        ("BPI", "BPI"),
+        ("BDO", "BDO"),
+        ("GCash", "GCash"),
+        ("Other", "Other"),
+    ]
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="payments")
+    title = models.CharField(max_length=100)
+    method = models.CharField(max_length=20, choices=METHOD_CHOICES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    reference_number = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.amount} ({self.method})"

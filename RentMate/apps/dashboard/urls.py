@@ -11,6 +11,7 @@ urlpatterns = [
     # Tenant Dashboard
     path('tenant-home/', views.tenant_home, name='tenant_home'),
     path('tenant-home/maintenance/', views.tenant_maintenance_add_view, name='tenant_maintenance'),
+    path('tenant/payment/', views.tenant_payment, name='tenant_payment'),
 
     # Tenant Maintenance List/Edit/Delete
     path('tenant/maintenance/list/', views.tenant_maintenance_list_view, name='tenant_maintenance_list'),
