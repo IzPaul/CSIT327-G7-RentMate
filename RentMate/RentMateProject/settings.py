@@ -208,3 +208,31 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'rrentmate@gmail.com'  # your Gmail
 EMAIL_HOST_PASSWORD = 'fklsdkibesbcofba' # app password generated from Google Account
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Logging configuration to ensure exceptions are visible in Render logs
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        # App-specific module where we added logging
+        'apps.landlord_login': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

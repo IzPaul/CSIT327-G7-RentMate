@@ -14,48 +14,56 @@ logger = logging.getLogger(__name__)
 
 def landlord_login(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        try:
+            email = request.POST.get('email')
+            password = request.POST.get('password')
 
-        # Try to authenticate using Django's built-in authentication
-        user = authenticate(request, username=email, password=password)
+            # Try to authenticate using Django's built-in authentication
+            user = authenticate(request, username=email, password=password)
 
-        if user is not None:
-            # Check if user is a landlord
-            try:
-                landlord_profile = LandlordProfile.objects.get(user=user)
-                login(request, user)
-                logger.info(f"Landlord {user.email} logged in successfully")
-                return redirect('home')  # Redirect to dashboard
-            except LandlordProfile.DoesNotExist:
-                messages.error(request, 'Account not found or not a landlord account')
-                logger.warning(f"Login attempt with landlord account but no profile: {email}")
-        else:
-            messages.error(request, 'Invalid Credentials')
-            logger.warning(f"Failed login attempt for email: {email}")
+            if user is not None:
+                # Check if user is a landlord
+                try:
+                    landlord_profile = LandlordProfile.objects.get(user=user)
+                    login(request, user)
+                    logger.info(f"Landlord {user.email} logged in successfully")
+                    return redirect('home')  # Redirect to dashboard
+                except LandlordProfile.DoesNotExist:
+                    messages.error(request, 'Account not found or not a landlord account')
+                    logger.warning(f"Login attempt with landlord account but no profile: {email}")
+            else:
+                messages.error(request, 'Invalid Credentials')
+                logger.warning(f"Failed login attempt for email: {email}")
+        except Exception as e:
+            logger.exception(f"Unexpected error during landlord login for {request.POST.get('email')}")
+            messages.error(request, 'An unexpected error occurred. Please try again later.')
 
     return render(request, 'logins/landlord-login.html')
 
 def tenant_login(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        try:
+            email = request.POST.get('email')
+            password = request.POST.get('password')
 
-        #User authentication
-        user = authenticate(request, username=email, password=password)
+            #User authentication
+            user = authenticate(request, username=email, password=password)
 
-        if user is not None:
-            try:
-                tenant = Tenant.objects.get(user=user)
-                login(request, user)
-                logger.info(f"Tenant {user.email} logged in successfully")
-                return redirect('tenant_home')  # Redirect to dashboard
-            except Tenant.DoesNotExist:
-                messages.error(request, 'Account not found or not a tenant account')
-                logger.warning(f"Login attempt with tenant account but no profile: {email}")
-        else:
-            messages.error(request, 'Invalid Credentials')
-            logger.warning(f"Failed login attempt for email: {email}")
+            if user is not None:
+                try:
+                    tenant = Tenant.objects.get(user=user)
+                    login(request, user)
+                    logger.info(f"Tenant {user.email} logged in successfully")
+                    return redirect('tenant_home')  # Redirect to dashboard
+                except Tenant.DoesNotExist:
+                    messages.error(request, 'Account not found or not a tenant account')
+                    logger.warning(f"Login attempt with tenant account but no profile: {email}")
+            else:
+                messages.error(request, 'Invalid Credentials')
+                logger.warning(f"Failed login attempt for email: {email}")
+        except Exception as e:
+            logger.exception(f"Unexpected error during tenant login for {request.POST.get('email')}")
+            messages.error(request, 'An unexpected error occurred. Please try again later.')
 
     return render(request, 'logins/tenant-login.html')
 
