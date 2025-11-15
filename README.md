@@ -46,5 +46,6 @@ Admin Panel: http://127.0.0.1:8000/admin/
 
 
 🌐 Deployed Link
+rentmate-h3m7.onrender.com
 
 Not available at the moment
