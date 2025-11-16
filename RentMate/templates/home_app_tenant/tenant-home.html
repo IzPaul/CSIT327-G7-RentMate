@@ -59,18 +59,18 @@
         <!-- Dashboard Cards -->
         <div class="dashboard-cards">
             <div class="card">
-                <div class="card-label">Latest Notice</div>
-                <div class="card-title">Rent Increase</div>
-                <div class="card-subtitle green">New Notice!</div>
+                <div class="card-label">Payment Status</div>
+                <div class="card-title {% if payment.status == 'Unpaid' %}red{% else %}green{% endif %}">{{payment_status}}</div>
+                <div class="card-subtitle">{% if payment.status == "Unpaid" %}Please pay your balance{% endif %}</div>
             </div>
             <div class="card">
                 <div class="card-label">Lease Ends In</div>
-                <div class="card-title">16 days</div>
-                <div class="card-subtitle">October 5, 2025</div>
+                <div class="card-title">{{lease_remaining}}</div>
+                <div class="card-subtitle">{{tenant.lease_end}}</div>
             </div>
             <div class="card">
                 <div class="card-label">Outstanding Balance</div>
-                <div class="card-title">₱43,000</div>
+                <div class="card-title">₱{{outstanding_balance}}</div>
                 <div class="card-subtitle green">+ 2.4% this month</div>
             </div>
             <div class="card">

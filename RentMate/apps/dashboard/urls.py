@@ -25,4 +25,8 @@ urlpatterns = [
     # Landlord Maintenance Management
     path('landlord/maintenance-list/', views.landlord_maintenance_list_view, name='landlord_maintenance_list'),
     path('landlord/maintenance-update/<int:request_id>/', views.landlord_maintenance_update_view, name='landlord_maintenance_update'),
+
+    #LandLord Proof of Payments
+    path('landlord/payments-list/', views.landlord_payments_list_view, name='landlord_payments_list'),
+    path('landlord/payments-update/<int:payment_id>/', views.landlord_payments_update_view, name='landlord_payments_update'),
 ]

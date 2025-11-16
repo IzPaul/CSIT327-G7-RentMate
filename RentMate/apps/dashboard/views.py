@@ -5,7 +5,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.hashers import check_password, make_password
+from django.db.models import Sum
 from datetime import datetime
+from decimal import Decimal
 
 from .forms import TenantRegisterForm, MaintenanceRequestForm, LandlordMaintenanceUpdateForm, PaymentForm
 from .models import Tenant, MaintenanceRequest, Payment
@@ -145,12 +147,36 @@ def tenant_home(request):
     approved_count = requests.filter(request_status='Approved').count()
     completed_count = requests.filter(request_status='Completed').count()
 
+    #calculate time left until lease end
+    today = datetime.now().date()
+    days_remaining = (tenant.lease_end - today).days
+    #convert days to # months and # days
+    if days_remaining > 30:
+        months = days_remaining // 30
+        remaining_days = days_remaining % 30
+        lease_remaining = f"{months} month{'s' if months > 1 else ''}"
+        if remaining_days > 0:
+            lease_remaining += f" and {remaining_days} day{'s' if remaining_days > 1 else ''}"
+    else:
+        lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
+
+    #calculate outstanding balance
+    lease_duration_months = (tenant.lease_end - tenant.lease_start).days // 30
+    initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
+    total_paid = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    outstanding_balance = initial_balance - total_paid
+
+    payment_status = ("Paid" if outstanding_balance <= 0 else "Unpaid")
+
     return render(request, "home_app_tenant/tenant-home.html", {
         "tenant": tenant,
         "requests": requests,
         "pending_count": pending_count,
         "approved_count": approved_count,
         "completed_count": completed_count,
+        "payment_status": payment_status,
+        "lease_remaining": lease_remaining,
+        "outstanding_balance": outstanding_balance,
     })
 
 # --- TENANT MAINTENANCE REQUESTS ---
@@ -309,4 +335,32 @@ def landlord_maintenance_update_view(request, request_id):
 
     return render(request, "home_app/landlord-maintenance-update.html", {
         "request_item": maintenance_request
+    })
+
+# ----- LANDLORD PROOF OF PAYMENTS LIST --------
+@login_required(login_url='landlord_login')
+def landlord_payments_list_view(request):
+
+    payments = Payment.objects.all().order_by('-created_at')
+
+    return render(request, 'home_app/landlord-payments-list.html', {
+        "payments": payments
+    })
+
+@login_required(login_url='landlord_login')
+def landlord_payments_update_view(request, payment_id):
+    payment = Payment.objects.get(id=payment_id)
+    if request.method == "POST":
+        status = request.POST.get("status")
+        date_verified = request.POST.get("date_verified")
+
+        if status != payment.status:
+            payment.status = status
+            payment.date_verified = date_verified
+            payment.save()
+            return redirect("landlord_payments_list")
+
+
+    return render(request, 'home_app/landlord-payments-list-update.html',{
+        "payment": payment
     })
