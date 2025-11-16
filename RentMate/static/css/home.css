@@ -281,6 +281,11 @@
             color: #fca5a5;
         }
 
+        .maintenance-table .status.disapproved {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
         .maintenance-table .btn-update {
             padding: 8px 18px;
             background: linear-gradient(135deg, #5c7cff, #3b5bdb);
