@@ -60,8 +60,8 @@
         <div class="dashboard-cards">
             <div class="card">
                 <div class="card-label">Payment Status</div>
-                <div class="card-title {% if payment.status == 'Unpaid' %}red{% else %}green{% endif %}">{{payment_status}}</div>
-                <div class="card-subtitle">{% if payment.status == "Unpaid" %}Please pay your balance{% endif %}</div>
+                <div class="card-title {% if payment_status == 'Unpaid' %}red{% else %}green{% endif %}">{{payment_status}}</div>
+                <div class="card-subtitle">{% if payment_status == "Unpaid" %}Please pay your balance{% endif %}</div>
             </div>
             <div class="card">
                 <div class="card-label">Lease Ends In</div>
