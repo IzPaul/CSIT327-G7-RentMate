@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - RentMate</title>
+    <title>Maintenance Request - RentMate</title>
     <link rel="stylesheet" href="{% static 'css/tenant-maintenance.css' %}">
 </head>
 <body>
-    <!-- Sidebar Navigation -->
-    <div class="sidebar">
+    <!-- Left Sidebar Navigation -->
+    <div class="sidebar left-sidebar">
         <div class="nav-section">
             <div class="nav-title">Navigation</div>
             <a href="{% url 'tenant_home' %}" class="nav-item">
@@ -19,11 +19,9 @@
                 Dashboard
             </a>
             <a href="{% url 'tenant_payment' %}" class="nav-item">
-                <svg width="200" height="150" viewBox="0 0 200 150">
-                  <rect x="10" y="10" width="180" height="130" rx="15" ry="15" fill="#f0f0f0" stroke="#ccc" stroke-width="2"/>
-                  <text x="100" y="85" font-family="Arial, sans-serif" font-size="110" text-anchor="middle" alignment-baseline="middle">
-                    $
-                  </text>
+                <svg fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
+                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
                 </svg>
                 Payment
             </a>
@@ -50,85 +48,151 @@
                 Settings
             </a>
         </div>
+
+        <a href="{% url 'tenant_login' %}" class="logout-btn">
+            Log out
+        </a>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <h1>Maintenance Request Form</h1>
-            <div class="subtitle">Use this form to report any issues or repairs needed in your rental unit.
-                Please fill up everything. Your request will be sent directly to the landlord or property manager.</div>
+            <div class="header-left">
+                <div class="logo-circle"></div>
+                <h1 class="logo-text">RentMate</h1>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20" width="24" height="24">
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+                <button class="icon-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20" width="24" height="24">
+                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                    </svg>
+                </button>
+                <div class="user-avatar-header"></div>
+            </div>
         </div>
 
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == 'error' %}
-                    <div class="error-message">{{ message }}</div>
-                {% else %}
-                    <div class="success-message">{{ message }}</div>
+        <div class="content-wrapper">
+            <div class="history-section left-section">
+                <div class="profile-card">
+                    <div class="profile-avatar"></div>
+                    <h3 class="profile-name">{{ tenant.first_name }} {{ tenant.last_name }}</h3>
+                    <p class="profile-phone">{{ tenant.phone_number }}</p>
+                </div>
+
+                <div class="history-card">
+                    <h4 class="history-title">History</h4>
+                    <div class="history-list">
+                        {% for request in maintenance_requests %}
+                            <div class="history-item">
+                                <div class="history-info">
+                                    <p class="history-type">{{ request.maintenance_type }}</p>
+                                    <p class="history-date">{{ request.date_requested|date:"F d, Y" }}</p>
+                                </div>
+                                <span class="status-badge {% if request.request_status == 'Completed' %}status-resolved{% elif request.request_status == 'Canceled' %}status-cancelled{% else %}status-pending{% endif %}">
+                                    {% if request.request_status == 'Completed' %}
+                                        Resolved
+                                    {% elif request.request_status == 'Canceled' %}
+                                        Cancelled
+                                    {% else %}
+                                        {{ request.request_status }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% empty %}
+                            <p class="no-history">No maintenance history yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Maintenance Request</h2>
+                <p class="section-subtitle">Complete this form to file a maintenance request for any issues related to facilities, equipment, or infrastructure. All submissions will be reviewed and scheduled based on urgency and availability.</p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <div class="error-message">{{ message }}</div>
+                        {% else %}
+                            <div class="success-message">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
                 {% endif %}
-            {% endfor %}
-        {% endif %}
 
-        <div class="name-container">
-                <h2>{{ request.user.first_name|default:"First Name" }} {{ request.user.last_name|default:"Last Name" }}</h2>
-                <h3>Tenant</h3>
+                <form method="POST" class="maintenance-form">
+                    {% csrf_token %}
+
+                    <div class="form-group-modern">
+                        <label class="form-label">Problem <span class="label-hint">(Select all that apply)</span></label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="problem[]" value="Toilet Problem">
+                                <span>Toilet Problem</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="problem[]" value="No Internet">
+                                <span>No Internet</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="problem[]" value="No Water">
+                                <span>No Water</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="problem[]" value="No Electricity">
+                                <span>No Electricity</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="problem[]" value="No Signal">
+                                <span>No Signal</span>
+                            </label>
+                            <label class="checkbox-item" id="others-checkbox">
+                                <input type="checkbox" name="problem[]" value="Others">
+                                <span>Others: <span class="specify-text">(Please Specify)</span></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group-modern" id="other-description-field" style="display: none;">
+                        <textarea name="other_description" placeholder="Please specify other problems..." rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" placeholder="Respondent's answer..." rows="6" required></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit-modern">Submit</button>
+                    </div>
+                </form>
+            </div>
         </div>
-
-        <form method="POST">
-
-            {% csrf_token %}
-
-            <div class="form-group">
-{#                <select name="status">#}
-{#                    <option value="" disabled selected hidden>Choose a Maintenance Option </option>#}
-{#                    <option value="Plumbing">Plumbing</option>#}
-{#                    <option value="Electrical">Electrical</option>#}
-{#                    <option value="Structural">Structural</option>#}
-{#                    <option value="Others">Others</option>#}
-{#                </select>#}
-                {{ form.maintenance_type }}
-            </div>
-
-            <div class="form-group" id="other-description-field" style="display: none">
-{#              <textarea name="others_description" value="{{ form.others_description.value|default_if_none:'' }}" placeholder="If others, please provide a description" required></textarea>#}
-                {{ form.other_description }}
-            </div>
-
-            <div class="form-group">
-{#              <textarea name="description" value="{{ form.description.value|default_if_none:'' }}" placeholder="Enter description of issue" required></textarea>#}
-                {{ form.description }}
-            </div>
-
-            <div class="form-buttons">
-                <button type="submit" class="btn btn-submit">Submit</button>
-            </div>
-        </form>
-
-
     </div>
 
-    <div class="sidebar">
-            <div class="user-avatar"></div>
-    </div>
-
-    <!-- for hiding or showing other description when selecting maintenance type -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const maintenanceSelect = document.querySelector('select[name="maintenance_type"]');
+            const othersCheckbox = document.querySelector('input[value="Others"]');
             const otherField = document.getElementById('other-description-field');
 
             function toggleOtherField() {
-                if (maintenanceSelect.value === 'Others') {
+                if (othersCheckbox && othersCheckbox.checked) {
                     otherField.style.display = 'block';
                 } else {
                     otherField.style.display = 'none';
-                    otherField.querySelector('textarea').value = ''; // clear text if hidden
+                    const textarea = otherField.querySelector('textarea');
+                    if (textarea) textarea.value = '';
                 }
             }
 
-            maintenanceSelect.addEventListener('change', toggleOtherField);
-            toggleOtherField(); // initial check
+            if (othersCheckbox) {
+                othersCheckbox.addEventListener('change', toggleOtherField);
+                toggleOtherField();
+            }
         });
     </script>
 </body>
