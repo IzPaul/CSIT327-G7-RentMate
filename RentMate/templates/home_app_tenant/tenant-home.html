@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tenant Dashboard - RentMate</title>
+    <link rel="stylesheet" href="{% static 'css/tenant-maintenance.css' %}">
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
-    <!-- Sidebar Navigation -->
-    <div class="sidebar">
+    <!-- Left Sidebar Navigation -->
+    <div class="sidebar left-sidebar">
         <div class="nav-section">
             <div class="nav-title">Navigation</div>
             <a href="{% url 'tenant_home' %}" class="nav-item active">
@@ -19,8 +20,9 @@
                 Dashboard
             </a>
             <a href="{% url 'tenant_payment' %}" class="nav-item">
-                <svg fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M4 4h12a2 2 0 012 2v1H2V6a2 2 0 012-2zm-2 6h16v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4zm3 3a1 1 0 100 2h3a1 1 0 100-2H5z"/>
+                <svg fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
+                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
                 </svg>
                 Payment
             </a>
@@ -47,13 +49,32 @@
                 Settings
             </a>
         </div>
+
+        <a href="{% url 'tenant_login' %}" class="logout-btn">
+            Log out
+        </a>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <h1>Welcome, {{ tenant.first_name }}</h1>
-            <div class="user-avatar"></div>
+            <div class="header-left">
+                <div class="logo-circle"></div>
+                <h1 class="logo-text">RentMate</h1>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20" width="24" height="24">
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+                <button class="icon-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20" width="24" height="24">
+                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                    </svg>
+                </button>
+                <div class="user-avatar-header"></div>
+            </div>
         </div>
 
         <!-- Dashboard Cards -->
