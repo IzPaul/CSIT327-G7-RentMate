@@ -200,23 +200,49 @@ def tenant_maintenance_add_view(request):
         return redirect('tenant_login')
 
     tenant = Tenant.objects.get(id=tenant_id)
+    maintenance_requests = MaintenanceRequest.objects.filter(requester=tenant).order_by('-date_requested')[:5]
 
     if request.method == 'POST':
-        form = MaintenanceRequestForm(request.POST)
-        if form.is_valid():
-            MaintenanceRequest.objects.create(
-                requester=tenant,
-                date_requested=timezone.localtime().date(),
-                maintenance_type=form.cleaned_data['maintenance_type'],
-                other_description=form.cleaned_data['other_description'],
-                description=form.cleaned_data['description']
-            )
-            messages.success(request, 'Maintenance request created successfully!')
-            return redirect('tenant_home')
-    else:
-        form = MaintenanceRequestForm()
+        # Handle checkbox problems
+        problems = request.POST.getlist('problem[]')
+        other_description = request.POST.get('other_description', '')
+        description = request.POST.get('description', '')
 
-    return render(request, 'home_app_tenant/tenant-maintenance.html', {'form': form})
+        # Combine problems into maintenance_type
+        if problems:
+            maintenance_type = ', '.join(problems)
+        else:
+            messages.error(request, 'Please select at least one problem.')
+            return render(request, 'home_app_tenant/tenant-maintenance.html', {
+                'tenant': tenant,
+                'maintenance_requests': maintenance_requests
+            })
+
+        # If "Others" is selected, add the other_description
+        if 'Others' in problems and other_description:
+            maintenance_type = maintenance_type.replace('Others', f'Others: {other_description}')
+
+        if not description:
+            messages.error(request, 'Please provide a description.')
+            return render(request, 'home_app_tenant/tenant-maintenance.html', {
+                'tenant': tenant,
+                'maintenance_requests': maintenance_requests
+            })
+
+        MaintenanceRequest.objects.create(
+            requester=tenant,
+            date_requested=timezone.localtime().date(),
+            maintenance_type=maintenance_type,
+            other_description=other_description if 'Others' in problems else '',
+            description=description
+        )
+        messages.success(request, 'Maintenance request submitted successfully!')
+        return redirect('tenant_maintenance')
+
+    return render(request, 'home_app_tenant/tenant-maintenance.html', {
+        'tenant': tenant,
+        'maintenance_requests': maintenance_requests
+    })
 
 
 # --- TENANT PAYMENTS ---
