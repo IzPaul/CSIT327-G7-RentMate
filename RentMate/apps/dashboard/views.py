@@ -354,7 +354,7 @@ def tenant_maintenance_delete_view(request, request_id):
 
 @login_required(login_url='landlord_login')
 def home_view(request):
-    requests = MaintenanceRequest.objects.all()
+    requests = MaintenanceRequest.objects.filter(requester__assigned_landlord=request.user).order_by('-date_requested')
     pending_count = requests.filter(request_status='Pending').count()
 
     context = {
@@ -365,7 +365,7 @@ def home_view(request):
 
 @login_required(login_url='landlord_login')
 def landlord_maintenance_list_view(request):
-    requests = MaintenanceRequest.objects.all().order_by('-date_requested')
+    requests = MaintenanceRequest.objects.filter(requester__assigned_landlord=request.user).order_by('-date_requested')
     return render(request, 'home_app/landlord-maintenance-list.html', {'requests': requests})
 
 @login_required(login_url='landlord_login')
@@ -406,7 +406,7 @@ def landlord_maintenance_update_view(request, request_id):
 @login_required(login_url='landlord_login')
 def landlord_payments_list_view(request):
 
-    payments = Payment.objects.all().order_by('-created_at')
+    payments = Payment.objects.filter(tenant__assigned_landlord=request.user).order_by('-created_at')
 
     return render(request, 'home_app/landlord-payments-list.html', {
         "payments": payments
