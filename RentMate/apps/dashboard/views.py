@@ -17,7 +17,7 @@ from .models import Tenant, MaintenanceRequest, Payment
 
 @login_required(login_url='landlord_login')
 def tenant_list_view(request):
-    tenants = Tenant.objects.all()
+    tenants = Tenant.objects.filter(assigned_landlord=request.user)
     query = request.GET.get('q', '').strip()
 
     if query:
@@ -65,6 +65,7 @@ def tenant_register(request):
         form = TenantRegisterForm(request.POST)
         if form.is_valid():
             tenant = form.save(commit=False)
+            tenant.assigned_landlord = request.user
             tenant.is_active = False
             tenant.first_login = True
             tenant.status = 'Inactive'
@@ -423,10 +424,11 @@ def landlord_payments_update_view(request, payment_id):
             payment.date_verified = date_verified
             payment.save()
             return redirect("landlord_payments_list")
-
+    date_today = date.today()
 
     return render(request, 'home_app/landlord-payments-list-update.html',{
-        "payment": payment
+        "payment": payment,
+        "date_today": date_today,
     })
 
 # Landlord - Tenant Profile View
