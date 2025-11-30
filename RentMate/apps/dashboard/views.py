@@ -9,7 +9,7 @@ from django.db.models import Sum
 from datetime import datetime
 from decimal import Decimal
 from django.db.models import Q
-
+from django.views.decorators.http import require_POST
 from .forms import TenantRegisterForm, MaintenanceRequestForm, LandlordMaintenanceUpdateForm, PaymentForm
 from .models import Tenant, MaintenanceRequest, Payment
 
@@ -424,12 +424,18 @@ def landlord_payments_update_view(request, payment_id):
             payment.date_verified = date_verified
             payment.save()
             return redirect("landlord_payments_list")
-    date_today = date.today()
 
     return render(request, 'home_app/landlord-payments-list-update.html',{
         "payment": payment,
-        "date_today": date_today,
     })
+
+@require_POST
+def approve_payment(request,payment_id):
+    payment = get_object_or_404(Payment, id=payment_id)
+    payment.status = "Approved"
+    payment.date_verified = datetime.now().date()
+    payment.save()
+    return redirect('landlord_payments_list')
 
 # Landlord - Tenant Profile View
 @login_required(login_url='landlord_login')
