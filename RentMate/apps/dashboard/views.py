@@ -8,6 +8,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.db.models import Sum
 from datetime import datetime
 from decimal import Decimal
+from django.db.models import Q
 
 from .forms import TenantRegisterForm, MaintenanceRequestForm, LandlordMaintenanceUpdateForm, PaymentForm
 from .models import Tenant, MaintenanceRequest, Payment
@@ -17,7 +18,44 @@ from .models import Tenant, MaintenanceRequest, Payment
 @login_required(login_url='landlord_login')
 def tenant_list_view(request):
     tenants = Tenant.objects.all()
-    return render(request, "home_app/tenant-list.html", {'tenants': tenants})
+    query = request.GET.get('q', '').strip()
+
+    if query:
+        tenants = tenants.filter(
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(email__icontains=query)
+        )
+
+    status_filter = request.GET.get('status', 'all')
+    payment_filter = request.GET.get('payment', 'all')
+
+    if status_filter != 'all':
+        tenants = tenants.filter(status__iexact=status_filter)
+
+    if payment_filter != 'all':
+        tenants = tenants.filter(payment_status__iexact=payment_filter)
+
+    sort_by = request.GET.get('sort', 'name')
+    sort_map = {
+        'name': 'first_name',
+        'unit': 'unit',
+        'start_date': 'lease_start',
+        'end_date': 'lease_end',
+        'rent': 'rent',
+        'payment_status': 'payment_status',
+        'rental_status': 'status',
+    }
+    if sort_by in sort_map:
+        tenants = tenants.order_by(sort_map[sort_by])
+
+    return render(request, "home_app/tenant-list.html", {
+        'tenants': tenants,
+        'search_query': query,
+        'current_status': status_filter or 'all',
+        'current_payment': payment_filter or 'all',
+        'current_sort': sort_by,
+    })
 
 def tenant_register(request):
     if not request.user.is_authenticated:
@@ -389,4 +427,19 @@ def landlord_payments_update_view(request, payment_id):
 
     return render(request, 'home_app/landlord-payments-list-update.html',{
         "payment": payment
+    })
+
+# Landlord - Tenant Profile View
+@login_required(login_url='landlord_login')
+def landlord_tenant_profile_view(request, tenant_id):
+    tenant = get_object_or_404(Tenant, id=tenant_id)
+    approved_payments = Payment.objects.filter(tenant=tenant, status="Approved").order_by('date_verified')
+    activities = Payment.objects.filter(tenant=tenant).exclude(status="Approved").order_by('created_at')
+    requests = MaintenanceRequest.objects.filter(requester=tenant).order_by('date_requested')
+
+    return render(request, 'home_app/landlord-tenant-profile.html', {
+        "tenant": tenant,
+        "approved_payments": approved_payments,
+        "activities": activities,
+        "requests": requests,
     })
