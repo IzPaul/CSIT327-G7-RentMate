@@ -22,6 +22,9 @@ urlpatterns = [
     path('tenant/login/', views.tenant_login, name='tenant_login'),
     path('tenant/change-password/', views.tenant_change_password, name='tenant_change_password'),
 
+    #Landlord Tenants List
+    path('tenant_list/tenant-profile/<int:tenant_id>/', views.landlord_tenant_profile_view, name='landlord_tenant_profile'),
+
     # Landlord Maintenance Management
     path('landlord/maintenance-list/', views.landlord_maintenance_list_view, name='landlord_maintenance_list'),
     path('landlord/maintenance-update/<int:request_id>/', views.landlord_maintenance_update_view, name='landlord_maintenance_update'),

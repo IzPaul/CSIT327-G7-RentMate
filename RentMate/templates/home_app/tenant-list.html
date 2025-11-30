@@ -1,120 +1,236 @@
-    {% load static %}
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{% static 'css/tenants-list.css' %}">
-        <title>Tenant list - RentMate</title>
-    </head>
-    <body>
-        <!-- Sidebar Navigation -->
-        <div class="sidebar">
-            <div class="nav-section">
-                <div class="nav-title">Navigation</div>
-                <a href="{% url 'home' %}" class="nav-item">
-                    <svg fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
-                    </svg>
-                    Dashboard
-                </a>
-                <a href="#" class="nav-item active">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
-                    </svg>
-                    Tenants
-                </a>
-                <a href="{% url 'landlord_payments_list' %}" class="nav-item">
-                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                    <path d="M12 4 H52 V44 L44 56 L32 44 L20 56 L12 44 Z" fill="#E0E0E0" stroke="#333" stroke-width="2"/>
-                    <line x1="18" y1="16" x2="28" y2="16" stroke="#666" stroke-width="2"/>
-                    <line x1="32" y1="16" x2="50" y2="16" stroke="#666" stroke-width="2"/>
-                    <line x1="18" y1="26" x2="34" y2="26" stroke="#666" stroke-width="2"/>
-                    <line x1="38" y1="26" x2="50" y2="26" stroke="#666" stroke-width="2"/>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/tenants-list.css' %}">
+    <title>Tenant list - RentMate</title>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="nav-section">
+            <div class="nav-title">Navigation</div>
+            <a href="{% url 'home' %}" class="nav-item">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                 </svg>
-                Proof of Payments
+                Dashboard
             </a>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-title">Management</div>
-                <a href="#" class="nav-item">
-                    <svg fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
-                    </svg>
-                    Maintenance
-                </a>
-                <a href="#" class="nav-item">
-                    <svg fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-                    </svg>
-                    Calendar
-                </a>
-                <a href="#" class="nav-item">
-                    <svg fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
-                    </svg>
-                    Settings
-                </a>
-            </div>
+            <a href="#" class="nav-item active">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
+                </svg>
+                Tenants
+            </a>
+            <a href="{% url 'landlord_payments_list' %}" class="nav-item">
+              <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                <path d="M12 4 H52 V44 L44 56 L32 44 L20 56 L12 44 Z" fill="#E0E0E0" stroke="#333" stroke-width="2"/>
+                <line x1="18" y1="16" x2="28" y2="16" stroke="#666" stroke-width="2"/>
+                <line x1="32" y1="16" x2="50" y2="16" stroke="#666" stroke-width="2"/>
+                <line x1="18" y1="26" x2="34" y2="26" stroke="#666" stroke-width="2"/>
+                <line x1="38" y1="26" x2="50" y2="26" stroke="#666" stroke-width="2"/>
+            </svg>
+            Proof of Payments
+        </a>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="header">
-                <h1>Tenants</h1>
-                <div class="user-avatar"></div>
-            </div>
+        <div class="nav-section">
+            <div class="nav-title">Management</div>
+            <a href="{% url 'landlord_maintenance_list' %}" class="nav-item">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                </svg>
+                Maintenance
+            </a>
+            <a href="#" class="nav-item">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                </svg>
+                Calendar
+            </a>
+            <a href="#" class="nav-item">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                </svg>
+                Settings
+            </a>
+        </div>
+    </div>
 
-            <!-- Tenant List Search Section -->
-            <div class="tenants-search-section">
-                <div class="left-section">
-                    <div class="search-filter-group">
-                        <div class="search-box">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            </svg>
-                        <input type="text" placeholder="Search" />
-                        </div>
-                        <button class="filter-btn">
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-circle"></div>
+                <h1 class="logo-text">RentMate</h1>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20" width="24" height="24">
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+                <button class="icon-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20" width="24" height="24">
+                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                    </svg>
+                </button>
+                <div class="user-avatar-header"></div>
+            </div>
+        </div>
+        <h1>Tenant Management</h1>
+
+        <!-- Tenant List Search Section -->
+        <div class="tenants-search-section">
+            <div class="left-section">
+
+                <div class="search-filter-group">
+                    <div class="search-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <form method="GET">
+                            <input type="text" name="q" id="tenant-search-input" value="{{ search_query|default:'' }}" placeholder="Search by name or email..."/>
+                        </form>
+
+                    </div>
+
+                    <button type="button" class="filter-btn" onclick="document.getElementById('filterModal').style.display='flex'">
                         <span>Filter</span>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 6H20M7 12H17M10 18H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        </button>
+                    </button>
+                </div>
+
+            </div>
+
+
+            <div class="right-section">
+                <a style="text-decoration: none;" href="{% url 'tenant_register' %}">
+                    <button class="add-btn">
+                        <span>＋</span>
+                        <span>Add New Tenant</span>
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tenant Lists Section -->
+        <div class="tenants-table-container">
+            <table class="tenants-table">
+                <thead>
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Unit</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Monthly Rent</th>
+                        <th>Payment Status</th>
+                        <th>Rental Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+            <div class="tenants-table-wrapper">
+                <table class="tenants-table">
+                    <tbody>
+                        {% for tenant in tenants %}
+                            <tr class="clickable-row" data-href="{% url 'landlord_tenant_profile' tenant.id %}">
+                                <td>{{ tenant.first_name }} {{ tenant.last_name }}</td>
+                                <td>{{ tenant.email }}</td>
+                                <td>{{ tenant.phone_number }}</td>
+                                <td>{{ tenant.unit }}</td>
+                                <td>{{ tenant.lease_start|date:"m-d-Y"|default:"-" }}</td>
+                                <td>{{ tenant.lease_end|date:"m-d-Y"|default:"-" }}</td>
+                                <td>P{{ tenant.rent }}</td>
+                                <td class="status {{ tenant.payment_status|lower }}">{{ tenant.payment_status }}</td>
+                                <td class="status {{ tenant.status|lower }}">{{ tenant.status }}</td>
+                                <td class="actions-cell">
+                                    <a href="{% url 'delete_tenant' tenant.id %}" class="btn-delete"
+                                       onclick="return confirm('Are you sure you want to delete this tenant?')">Delete</a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="9" class="no-data">No tenants found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </div>
+            </table>
+        </div>
+
+    <script>
+        document.querySelectorAll('.clickable-row').forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (e.target.closest('a, button, .btn-delete')) {
+                    return;
+                }
+
+                window.location = this.dataset.href;
+            });
+
+            row.style.cursor = 'pointer';
+        });
+    </script>
+
+    <!-- Filter Modal Popup  -->
+    <div id="filterModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Filter by:</h3>
+                <button class="modal-close" onclick="this.closest('.modal-overlay').style.display='none'">×</button>
+            </div>
+
+            <form method="GET" id="filterForm">
+                {% if search_query %}
+                    <input type="hidden" name="q" value="{{ search_query }}">
+                {% endif %}
+
+                <div class="filter-columns">
+                    <div class="filter-group">
+                        <h4>Rental Status:</h4>
+                        <label><input type="radio" name="status" value="all"      {% if current_status == 'all' or not current_status %}checked{% endif %}> All</label>
+                        <label><input type="radio" name="status" value="active"   {% if current_status == 'active' %}checked{% endif %}> Active</label>
+                        <label><input type="radio" name="status" value="inactive" {% if current_status == 'inactive' %}checked{% endif %}> Inactive</label>
+                        <label><input type="radio" name="status" value="terminated" {% if current_status == 'terminated' %}checked{% endif %}> Terminated</label>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4>Payment Status:</h4>
+                        <label><input type="radio" name="payment" value="all"     {% if current_payment == 'all' or not current_payment %}checked{% endif %}> All</label>
+                        <label><input type="radio" name="payment" value="paid"    {% if current_payment == 'paid' %}checked{% endif %}> Paid</label>
+                        <label><input type="radio" name="payment" value="pending"  {% if current_payment == 'pending' %}checked{% endif %}> Pending</label>
+                        <label><input type="radio" name="payment" value="overdue" {% if current_payment == 'overdue' %}checked{% endif %}> Overdue</label>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4>Sort by:</h4>
+                        <label><input type="radio" name="sort" value="name"           {% if current_sort == 'name' %}checked{% endif %}> Full Name</label>
+                        <label><input type="radio" name="sort" value="unit"           {% if current_sort == 'unit' %}checked{% endif %}> Unit</label>
+                        <label><input type="radio" name="sort" value="start_date"     {% if current_sort == 'start_date' %}checked{% endif %}> Start Date</label>
+                        <label><input type="radio" name="sort" value="end_date"       {% if current_sort == 'end_date' %}checked{% endif %}> End Date</label>
+                        <label><input type="radio" name="sort" value="rent"           {% if current_sort == 'rent' %}checked{% endif %}> Monthly Rent</label>
+                        <label><input type="radio" name="sort" value="payment_status" {% if current_sort == 'payment_status' %}checked{% endif %}> Payment Status</label>
+                        <label><input type="radio" name="sort" value="rental_status"  {% if current_sort == 'rental_status' %}checked{% endif %}> Rental Status</label>
                     </div>
                 </div>
 
-
-                <div class="right-section">
-                    <a style="text-decoration: none;" href="{% url 'tenant_register' %}">
-                        <button class="add-btn">
-                            <span>＋</span>
-                            <span>Add New Tenant</span>
-                        </button>
-                    </a>
+                <div class="modal-footer">
+                    <button type="button" onclick="window.location.href='?{% if search_query %}q={{ search_query }}{% endif %}'" class="btn-reset">
+                        Reset
+                    </button>
+                    <button type="submit" class="btn-save">Save</button>
                 </div>
-            </div>
+            </form>
+        </div>
+    </div>
 
-            <!-- Tenant Lists Section -->
-<div class="tenants-section">
-    <h2>Tenant List</h2>
-
-    {% if tenants %}
-        {% for tenant in tenants %}
-            <div class="request-item">
-                <div class="request-info">
-                    <span class="request-title">{{ tenant.first_name }} {{ tenant.last_name }}</span>
-                    <span class="request-details">{{ tenant.unit }} — {{ tenant.status }}</span>
-                </div>
-                <div class="request-actions">
-                    <a href="{% url 'edit_tenant' tenant.id %}" class="btn-edit">Edit</a>
-                    <a href="{% url 'delete_tenant' tenant.id %}" class="btn-delete" onclick="return confirm('Are you sure you want to delete this tenant?')">Delete</a>
-                </div>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>No tenants found.</p>
-    {% endif %}
-</div>
+</body>
+</html>
