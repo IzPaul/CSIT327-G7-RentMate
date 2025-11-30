@@ -473,7 +473,6 @@
     .tenants-table tbody tr:last-child td:first-child { border-bottom-left-radius: 12px; }
     .tenants-table tbody tr:last-child td:last-child { border-bottom-right-radius: 12px; }
 
-    /* Status badges */
     .tenants-table .status {
         padding: 8px 16px;
         font-size: 12.5px;
@@ -486,7 +485,6 @@
     .tenants-table .status.active  { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
     .tenants-table .status.inactive { background: rgba(100, 100, 100, 0.3); color: #ccc; }
 
-    /* Update button */
     .tenants-table .btn-update {
         padding: 8px 18px;
         background: linear-gradient(135deg, #5c7cff, #3b5bdb);
@@ -530,7 +528,6 @@
         opacity: 0.7;
     }
 
-    /* Buttons */
     .btn {
         padding: 10px 25px;
         border: none;

@@ -180,7 +180,7 @@
         });
     </script>
 
-        <!-- Filter Modal Popup  -->
+    <!-- Filter Modal Popup  -->
     <div id="filterModal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
             <div class="modal-header">
@@ -189,13 +189,11 @@
             </div>
 
             <form method="GET" id="filterForm">
-                <!-- Preserve search query -->
                 {% if search_query %}
                     <input type="hidden" name="q" value="{{ search_query }}">
                 {% endif %}
 
                 <div class="filter-columns">
-                    <!-- Rental Status -->
                     <div class="filter-group">
                         <h4>Rental Status:</h4>
                         <label><input type="radio" name="status" value="all"      {% if current_status == 'all' or not current_status %}checked{% endif %}> All</label>
@@ -204,7 +202,6 @@
                         <label><input type="radio" name="status" value="terminated" {% if current_status == 'terminated' %}checked{% endif %}> Terminated</label>
                     </div>
 
-                    <!-- Payment Status -->
                     <div class="filter-group">
                         <h4>Payment Status:</h4>
                         <label><input type="radio" name="payment" value="all"     {% if current_payment == 'all' or not current_payment %}checked{% endif %}> All</label>
@@ -213,7 +210,6 @@
                         <label><input type="radio" name="payment" value="overdue" {% if current_payment == 'overdue' %}checked{% endif %}> Overdue</label>
                     </div>
 
-                    <!-- Sort By -->
                     <div class="filter-group">
                         <h4>Sort by:</h4>
                         <label><input type="radio" name="sort" value="name"           {% if current_sort == 'name' %}checked{% endif %}> Full Name</label>
