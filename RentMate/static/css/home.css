@@ -573,6 +573,28 @@
             color: #bfbfbf;
         }
 
+        .clickable-row {
+            transition: background-color 0.2s ease;
+        }
+
+        .clickable-row:hover {
+            background-color: #383838 !important;
+            transform: translateY(-1px);
+        }
+
+        .clickable-row td {
+            position: relative;
+        }
+
+        .clickable-row:hover::after {
+            content: "→";
+            position: absolute;
+            right: 16px;
+            font-size: 18px;
+            color: #5c7cff;
+            opacity: 0.7;
+        }
+
         .form-container {
             display: grid;
             grid-template-columns: minmax(260px, 320px) minmax(320px, 1fr);
