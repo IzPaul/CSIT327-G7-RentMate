@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="{% static 'css/tenants-list.css' %}">
     <title>Tenant list - RentMate</title>
 </head>
@@ -56,6 +57,14 @@
                 </svg>
                 Settings
             </a>
+        </div>
+        <div class="logout-section">
+                <form method="post" action="{% url 'logout:logout' %}">
+                    {% csrf_token %}
+                        <button type="submit" class="logout-btn">Log out</button>
+                </form>
+        </div>
+
         </div>
     </div>
 

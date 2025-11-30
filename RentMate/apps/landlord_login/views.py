@@ -13,6 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 def landlord_login(request):
+    # If redirected here from a protected page (e.g., /home/)
+    if request.method == "GET" and "next" in request.GET:
+        messages.info(request, "Please log in to continue")
+
     if request.method == 'POST':
         try:
             email = request.POST.get('email')
@@ -39,6 +43,7 @@ def landlord_login(request):
             messages.error(request, 'An unexpected error occurred. Please try again later.')
 
     return render(request, 'logins/landlord-login.html')
+
 
 def tenant_login(request):
     if request.method == 'POST':

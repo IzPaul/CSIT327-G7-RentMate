@@ -1,0 +1,116 @@
+.payment-wrapper {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.payment-form-card {
+    background-color: #3a3a3a;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    width: 100%;
+    max-width: 460px;
+}
+
+.payment-form-card h2 {
+    font-size: 22px;
+    margin-bottom: 18px;
+}
+
+.payment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.payment-form label {
+    display: block;
+    font-size: 14px;
+    color: #d5d5d5;
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+}
+
+.payment-form input,
+.payment-form select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #4f4f4f;
+    background-color: #2d2d2d;
+    color: white;
+    font-size: 15px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payment-form input:focus,
+.payment-form select:focus {
+    outline: none;
+    border-color: #5c7cff;
+    box-shadow: 0 0 0 3px rgba(92, 124, 255, 0.2);
+}
+
+.payment-form .btn-submit {
+    background: linear-gradient(135deg, #5c7cff, #4169e1);
+    color: white;
+    border: none;
+    padding: 12px 0;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payment-form .btn-submit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px rgba(65, 105, 225, 0.35);
+}
+
+.payment-form .error-message {
+    margin-top: 6px;
+    padding: 8px 10px;
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: 6px;
+    font-size: 13px;
+    color: #fca5a5;
+}
+
+.payment-info-card {
+    background-color: #3a3a3a;
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    flex: 1;
+    min-width: 240px;
+}
+
+.payment-info-card h3 {
+    font-size: 20px;
+    margin-bottom: 14px;
+}
+
+.payment-info-card ul {
+    list-style: none;
+    display: grid;
+    gap: 12px;
+}
+
+.payment-info-card li {
+    background-color: #2d2d2d;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    border: 1px solid #444;
+}
+
+@media (max-width: 960px) {
+    .payment-form-card,
+    .payment-info-card {
+        max-width: 100%;
+    }
+}

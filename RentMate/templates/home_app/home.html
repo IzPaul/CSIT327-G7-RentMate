@@ -19,12 +19,12 @@
             </a>
             <a href="{% url 'tenant_list' %}" class="nav-item">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
+                    <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
                 </svg>
                 Tenants
             </a>
             <a href="{% url 'landlord_payments_list' %}" class="nav-item">
-                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
                     <path d="M12 4 H52 V44 L44 56 L32 44 L20 56 L12 44 Z" fill="#E0E0E0" stroke="#333" stroke-width="2"/>
                     <line x1="18" y1="16" x2="28" y2="16" stroke="#666" stroke-width="2"/>
                     <line x1="32" y1="16" x2="50" y2="16" stroke="#666" stroke-width="2"/>
@@ -56,6 +56,13 @@
                 Settings
             </a>
         </div>
+
+        <div class="logout-section">
+            <form method="post" action="{% url 'logout:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Log out</button>
+            </form>
+        </div>
     </div>
 
     <div class="main-content">
@@ -82,21 +89,21 @@
 
         <div class="dashboard-cards">
             <div class="card">
-                <div class="card-label">Latest Notice</div>
-                <div class="card-title">Rent Increase</div>
-                <div class="card-subtitle green">New Notice!</div>
+                <div class="card-label">Active Tenants</div>
+                <div class="card-title">{{ active_tenant_count }}</div>
+                <div class="card-subtitle">All currently active</div>
             </div>
 
             <div class="card">
-                <div class="card-label">Lease Ends In</div>
-                <div class="card-title">16 days</div>
-                <div class="card-subtitle">October 5, 2025</div>
+                <div class="card-label">Monthly Revenue</div>
+                <div class="card-title">₱{{ monthly_revenue }}</div>
+                <div class="card-subtitle">Total approved payments this month</div>
             </div>
 
             <div class="card">
-                <div class="card-label">Outstanding Balance</div>
-                <div class="card-title">₱43,000</div>
-                <div class="card-subtitle green">+ 2.4% this month</div>
+                <div class="card-label">Lease Renewals</div>
+                <div class="card-title">{{ lease_renewal_count }}</div>
+                <div class="card-subtitle">Leases ending this month</div>
             </div>
 
             <div class="card">
@@ -107,26 +114,29 @@
         </div>
 
         <div class="maintenance-section">
-    <h2>Maintenance Requests</h2>
+            <h2>Maintenance Requests</h2>
 
-    {% if requests %}
-        {% for req in requests %}
-        <div class="request-item">
-            <div class="request-info">
-                <div>
-                    <span class="request-title">{{ req.maintenance_type }}</span>
-                    <span class="request-date">{{ req.date_requested|date:"M d, Y" }}</span>
+            {% if requests %}
+                {% for req in requests %}
+                <div class="request-item">
+                    <div class="request-info">
+                        <div>
+                            <span class="request-title">{{ req.maintenance_type }}</span>
+                            <span class="request-date">{{ req.date_requested|date:"M d, Y" }}</span>
+                        </div>
+                        <span class="status-badge {% if req.request_status == 'Pending' %}pending{% elif req.request_status == 'Approved' %}approved{% else %}resolved{% endif %}">
+                            {{ req.request_status }}
+                        </span>
+                    </div>
+                    <div class="request-actions">
+                        <a href="{% url 'landlord_maintenance_update' req.id %}" class="btn btn-edit">VIEW / UPDATE</a>
+                    </div>
                 </div>
-                <span class="status-badge {% if req.request_status == 'Pending' %}pending{% elif req.request_status == 'Approved' %}approved{% else %}resolved{% endif %}">
-                    {{ req.request_status }}
-                </span>
-            </div>
-            <div class="request-actions">
-                <a href="{% url 'landlord_maintenance_update' req.id %}" class="btn btn-edit">VIEW / UPDATE</a>
-            </div>
+                {% endfor %}
+            {% else %}
+                <p>No maintenance requests available.</p>
+            {% endif %}
         </div>
-        {% endfor %}
-    {% else %}
-        <p>No maintenance requests available.</p>
-    {% endif %}
-</div>
+    </div>
+</body>
+</html>
