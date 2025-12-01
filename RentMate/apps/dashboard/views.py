@@ -479,7 +479,10 @@ def landlord_payments_update_view(request, payment_id):
         status = request.POST.get("status")
         date_verified = request.POST.get("date_verified")
 
-        if status != payment.status:
+        if date_verified == "":
+            date_verified = None
+
+        if status != payment.status or payment.date_verified != date_verified:
             payment.status = status
             payment.date_verified = date_verified
             payment.save()
