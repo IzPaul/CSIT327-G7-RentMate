@@ -107,10 +107,10 @@
             </div>
 
             <div class="card">
-                <div class="card-label">Maintenance Requests</div>
-                <div class="card-title">{{ requests.count }}</div>
-                <div class="card-subtitle">{{ pending_count }} Pending</div>
-            </div>
+    <div class="card-label">Payments to Verify</div>
+    <div class="card-title">{{ payment_count }}</div>
+    <div class="card-subtitle">Pending payment verification</div>
+</div>
         </div>
 
         <div class="maintenance-section">
@@ -124,8 +124,13 @@
                             <span class="request-title">{{ req.maintenance_type }}</span>
                             <span class="request-date">{{ req.date_requested|date:"M d, Y" }}</span>
                         </div>
-                        <span class="status-badge {% if req.request_status == 'Pending' %}pending{% elif req.request_status == 'Approved' %}approved{% else %}resolved{% endif %}">
-                            {{ req.request_status }}
+                        <span class="status-badge
+                            {% if req.request_status == 'Pending' %}pending
+                            {% elif req.request_status == 'Approved' %}approved
+                            {% elif req.request_status == 'Canceled' %}canceled
+                            {% else %}resolved
+                            {% endif %}">
+                                {{ req.request_status }}
                         </span>
                     </div>
                     <div class="request-actions">

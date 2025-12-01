@@ -401,14 +401,19 @@ def home_view(request):
             lease_end__year=current_year
         ).count()
 
+        # Count payments needing verification
+        payment_count = Payment.objects.filter(status="Pending").count()
+
         # Maintenance requests
         requests = MaintenanceRequest.objects.all()
         pending_count = requests.filter(request_status='Pending').count()
 
         context = {
+            'payment_count': Payment.objects.filter(status="Pending").count(),
             'active_tenant_count': active_tenant_count,
             'monthly_revenue': monthly_revenue,
             'lease_renewal_count': lease_renewal_count,
+            'payment_count': payment_count,
             'requests': requests,
             'pending_count': pending_count,
         }
