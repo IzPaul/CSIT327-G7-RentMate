@@ -57,6 +57,14 @@
                 Settings
             </a>
         </div>
+        <div class="logout-section">
+                <form method="post" action="{% url 'logout:logout' %}">
+                    {% csrf_token %}
+                        <button type="submit" class="logout-btn">Log out</button>
+                </form>
+        </div>
+
+        </div>
     </div>
 
     <!-- Main Content -->

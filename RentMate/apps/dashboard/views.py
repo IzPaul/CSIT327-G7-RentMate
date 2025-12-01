@@ -7,11 +7,14 @@ from django.utils import timezone
 from django.contrib.auth.hashers import check_password, make_password
 from django.db.models import Sum
 from datetime import datetime
+from datetime import date
 from decimal import Decimal
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from .forms import TenantRegisterForm, MaintenanceRequestForm, LandlordMaintenanceUpdateForm, PaymentForm
 from .models import Tenant, MaintenanceRequest, Payment
+from django.views.decorators.cache import never_cache
+
 
 # --- LANDLORD SIDE ---
 
@@ -57,6 +60,7 @@ def tenant_list_view(request):
         'current_sort': sort_by,
     })
 
+
 def tenant_register(request):
     if not request.user.is_authenticated:
         return redirect('landlord_login')
@@ -82,7 +86,7 @@ Your account has been created.
 Email: {tenant.email}
 Temporary Password: {temp_password}
 
-Please log in at: http://127.0.0.1:8000/home/tenant/login/
+Please log in at: [http://127.0.0.1:8000/home/tenant/login/]
 
 Thank you,
 RentMate Team
@@ -99,6 +103,7 @@ RentMate Team
 
     return render(request, 'home_app/tenant-account-register.html', {'form': form})
 
+
 def edit_tenant(request, tenant_id):
     tenant = get_object_or_404(Tenant, id=tenant_id)
     if request.method == 'POST':
@@ -114,13 +119,15 @@ def edit_tenant(request, tenant_id):
         form = TenantRegisterForm(instance=tenant)
     return render(request, 'home_app/tenant-account-register.html', {'form': form, 'edit_mode': True})
 
+
 def delete_tenant(request, tenant_id):
     tenant = get_object_or_404(Tenant, id=tenant_id)
     tenant.delete()
     messages.success(request, 'Tenant deleted successfully.')
     return redirect('tenant_list')
 
-# --- TENANT LOGIN & PASSWORD CHANGE ---
+
+# --- TENANT LOGIN, LOGOUT & PASSWORD CHANGE ---
 
 def tenant_login(request):
     if request.method == "POST":
@@ -150,6 +157,14 @@ def tenant_login(request):
 
     return render(request, "logins/tenant-login.html")
 
+
+def tenant_logout(request):
+    # Remove tenant id from session
+    request.session.pop("tenant_id", None)
+    messages.success(request, "You have been logged out successfully")
+    return redirect("tenant_login")
+
+
 def tenant_change_password(request):
     tenant_id = request.session.get("tenant_id")
     if not tenant_id:
@@ -172,11 +187,14 @@ def tenant_change_password(request):
 
     return render(request, "home_app/tenant-change-password.html")
 
+
 # --- TENANT DASHBOARD ---
 
+@never_cache
 def tenant_home(request):
     tenant_id = request.session.get("tenant_id")
     if not tenant_id:
+        messages.info(request, "Please log in to continue")
         return redirect("tenant_login")
 
     tenant = Tenant.objects.get(id=tenant_id)
@@ -186,10 +204,8 @@ def tenant_home(request):
     approved_count = requests.filter(request_status='Approved').count()
     completed_count = requests.filter(request_status='Completed').count()
 
-    #calculate time left until lease end
     today = datetime.now().date()
     days_remaining = (tenant.lease_end - today).days
-    #convert days to # months and # days
     if days_remaining > 30:
         months = days_remaining // 30
         remaining_days = days_remaining % 30
@@ -199,7 +215,6 @@ def tenant_home(request):
     else:
         lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
 
-    #calculate outstanding balance
     lease_duration_months = (tenant.lease_end - tenant.lease_start).days // 30
     initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
     total_paid = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
@@ -218,11 +233,14 @@ def tenant_home(request):
         "outstanding_balance": outstanding_balance,
     })
 
+
 # --- TENANT MAINTENANCE REQUESTS ---
 
+@never_cache
 def tenant_maintenance_list_view(request):
     tenant_id = request.session.get("tenant_id")
     if not tenant_id:
+        messages.info(request, "Please log in to continue")
         return redirect('tenant_login')
 
     tenant = Tenant.objects.get(id=tenant_id)
@@ -233,21 +251,22 @@ def tenant_maintenance_list_view(request):
         "requests": requests
     })
 
+
+@never_cache
 def tenant_maintenance_add_view(request):
     tenant_id = request.session.get("tenant_id")
     if not tenant_id:
+        messages.info(request, "Please log in to continue")
         return redirect('tenant_login')
 
     tenant = Tenant.objects.get(id=tenant_id)
     maintenance_requests = MaintenanceRequest.objects.filter(requester=tenant).order_by('-date_requested')[:5]
 
     if request.method == 'POST':
-        # Handle checkbox problems
         problems = request.POST.getlist('problem[]')
         other_description = request.POST.get('other_description', '')
         description = request.POST.get('description', '')
 
-        # Combine problems into maintenance_type
         if problems:
             maintenance_type = ', '.join(problems)
         else:
@@ -257,7 +276,6 @@ def tenant_maintenance_add_view(request):
                 'maintenance_requests': maintenance_requests
             })
 
-        # If "Others" is selected, add the other_description
         if 'Others' in problems and other_description:
             maintenance_type = maintenance_type.replace('Others', f'Others: {other_description}')
 
@@ -286,9 +304,11 @@ def tenant_maintenance_add_view(request):
 
 # --- TENANT PAYMENTS ---
 
+@never_cache
 def tenant_payment(request):
     tenant_id = request.session.get("tenant_id")
     if not tenant_id:
+        messages.info(request, "Please log in to continue")
         return redirect('tenant_login')
 
     tenant = Tenant.objects.get(id=tenant_id)
@@ -313,9 +333,12 @@ def tenant_payment(request):
         'tenant': tenant,
     })
 
+
+@never_cache
 def tenant_maintenance_edit_view(request, request_id):
     tenant_id = request.session.get("tenant_id")
     if not tenant_id:
+        messages.info(request, "Please log in to continue")
         return redirect('tenant_login')
 
     maintenance_request = get_object_or_404(MaintenanceRequest, id=request_id, requester_id=tenant_id)
@@ -335,9 +358,12 @@ def tenant_maintenance_edit_view(request, request_id):
 
     return render(request, 'home_app_tenant/tenant-maintenance-edit.html', {'form': form})
 
+
+@never_cache
 def tenant_maintenance_delete_view(request, request_id):
     tenant_id = request.session.get("tenant_id")
     if not tenant_id:
+        messages.info(request, "Please log in to continue")
         return redirect('tenant_login')
 
     maintenance_request = get_object_or_404(MaintenanceRequest, id=request_id, requester_id=tenant_id)
@@ -350,23 +376,54 @@ def tenant_maintenance_delete_view(request, request_id):
 
     return redirect('tenant_home')
 
+
 # --- LANDLORD MAINTENANCE MANAGEMENT ---
 
+@never_cache
 @login_required(login_url='landlord_login')
 def home_view(request):
-    requests = MaintenanceRequest.objects.filter(requester__assigned_landlord=request.user).order_by('-date_requested')
-    pending_count = requests.filter(request_status='Pending').count()
+    try:
+        # Count active tenants
+        active_tenant_count = Tenant.objects.filter(status="Active").count()
 
-    context = {
-        'requests': requests,
-        'pending_count': pending_count,
-    }
-    return render(request, "home_app/home.html", context)
+        # Calculate monthly revenue
+        current_month = date.today().month
+        current_year = date.today().year
+        monthly_revenue = Payment.objects.filter(
+            status="Approved",
+            date_verified__month=current_month,
+            date_verified__year=current_year
+        ).aggregate(total=Sum('amount'))['total'] or 0
+
+        # Count leases ending this month
+        lease_renewal_count = Tenant.objects.filter(
+            lease_end__month=current_month,
+            lease_end__year=current_year
+        ).count()
+
+        # Maintenance requests
+        requests = MaintenanceRequest.objects.all()
+        pending_count = requests.filter(request_status='Pending').count()
+
+        context = {
+            'active_tenant_count': active_tenant_count,
+            'monthly_revenue': monthly_revenue,
+            'lease_renewal_count': lease_renewal_count,
+            'requests': requests,
+            'pending_count': pending_count,
+        }
+
+        return render(request, "home_app/home.html", context)
+    except Exception as e:
+        print(f"Error in home_view: {e}")
+        raise
+
 
 @login_required(login_url='landlord_login')
 def landlord_maintenance_list_view(request):
     requests = MaintenanceRequest.objects.filter(requester__assigned_landlord=request.user).order_by('-date_requested')
     return render(request, 'home_app/landlord-maintenance-list.html', {'requests': requests})
+
 
 @login_required(login_url='landlord_login')
 def landlord_maintenance_update_view(request, request_id):
@@ -374,7 +431,7 @@ def landlord_maintenance_update_view(request, request_id):
 
     if request.method == "POST":
         remarks = request.POST.get("remarks")
-        completion_date = request.POST.get("completion_date")  # string YYYY-MM-DD
+        completion_date = request.POST.get("completion_date")
 
         maintenance_request.remarks = remarks
 
@@ -402,7 +459,9 @@ def landlord_maintenance_update_view(request, request_id):
         "request_item": maintenance_request
     })
 
+
 # ----- LANDLORD PROOF OF PAYMENTS LIST --------
+
 @login_required(login_url='landlord_login')
 def landlord_payments_list_view(request):
 
@@ -411,6 +470,7 @@ def landlord_payments_list_view(request):
     return render(request, 'home_app/landlord-payments-list.html', {
         "payments": payments
     })
+
 
 @login_required(login_url='landlord_login')
 def landlord_payments_update_view(request, payment_id):
@@ -438,6 +498,7 @@ def approve_payment(request,payment_id):
     return redirect('landlord_payments_list')
 
 # Landlord - Tenant Profile View
+
 @login_required(login_url='landlord_login')
 def landlord_tenant_profile_view(request, tenant_id):
     tenant = get_object_or_404(Tenant, id=tenant_id)

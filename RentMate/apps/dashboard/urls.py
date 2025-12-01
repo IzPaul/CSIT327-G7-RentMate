@@ -21,6 +21,7 @@ urlpatterns = [
 
     # Tenant Auth
     path('tenant/login/', views.tenant_login, name='tenant_login'),
+    path("tenant/logout/", views.tenant_logout, name="tenant_logout"),
     path('tenant/change-password/', views.tenant_change_password, name='tenant_change_password'),
 
     #Landlord Tenants List
