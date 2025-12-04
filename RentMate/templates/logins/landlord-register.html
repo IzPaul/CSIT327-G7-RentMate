@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Landlord Registration - RentMate</title>
     <link rel="stylesheet" href="{% static 'css/landlord-register.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <a href="{% url 'index' %}" class="header" style="text-decoration: none;">
@@ -13,17 +14,20 @@
         <span class="logo-text">RentMate</span>
     </a>
 
+
     <div class="main-container">
         <div class="registration-section">
             {% if messages %}
-                {% for message in messages %}
-                    {% if message.tags == 'error' %}
-                        <div class="error-message">{{ message }}</div>
-                    {% else %}
-                        <div class="success-message">{{ message }}</div>
-                    {% endif %}
-                {% endfor %}
+    {% for message in messages %}
+        {% if forloop.first %}
+            {% if message.tags == 'error' %}
+                <div class="error-message">{{ message }}</div>
+            {% else %}
+                <div class="success-message">{{ message }}</div>
             {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
             
             <form method="POST">
                 {% csrf_token %}
@@ -51,11 +55,17 @@
                 </div>
                 <div class="form-group">
                     <label for="{{ form.password.id_for_label }}">Enter New Password</label>
-                    {{ form.password }}
+                    <div class="password-input-wrapper">
+                        {{ form.password }}
+                        <i class="far fa-eye" id="togglePassword"></i>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="{{ form.confirm_password.id_for_label }}">Confirm Password</label>
-                    {{ form.confirm_password }}
+                    <div class="password-input-wrapper">
+                        {{ form.confirm_password }}
+                        <i class="far fa-eye" id="toggleConfirmPassword"></i>
+                    </div>
                 </div>
                 <button type="submit" class="register-btn">Register</button>
                 <div class="login-link">
@@ -64,6 +74,7 @@
             </form>
         </div>
 
+
         <div class="tagline-section">
             <div class="tagline">
                 keys to comfort
@@ -71,5 +82,33 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Toggle password visibility for password field
+        const togglePassword = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#{{ form.password.id_for_label }}');
+
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+
+        // Toggle password visibility for confirm password field
+        const toggleConfirmPassword = document.querySelector('#toggleConfirmPassword');
+        const confirmPasswordInput = document.querySelector('#{{ form.confirm_password.id_for_label }}');
+
+        if (toggleConfirmPassword && confirmPasswordInput) {
+            toggleConfirmPassword.addEventListener('click', function () {
+                const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPasswordInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+    </script>
 </body>
 </html>
