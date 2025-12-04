@@ -5,12 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Landlord - Leases | RentMate</title>
-    <link rel="stylesheet" href="{% static 'css/tenant-maintenance.css' %}">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="{% static 'css/landlord-leases.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="nav-section">
             <div class="nav-title">Navigation</div>
@@ -78,7 +76,6 @@
 
         </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <div class="header">
             <div class="header-left">
@@ -111,7 +108,7 @@
             {% endfor %}
         {% endif %}
 
-        <div class="leases-table-container">  <!-- renamed container -->
+        <div class="leases-table-container">
             <table class="leases-table">
                 <thead>
                     <tr>
@@ -141,7 +138,7 @@
                 </tbody>
             </table>
         </div>
-
+    </div>
 <script>
     document.querySelectorAll('.clickable-row').forEach(row => {
         row.addEventListener('click', function(e) {
