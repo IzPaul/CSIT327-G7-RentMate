@@ -418,7 +418,7 @@ def tenant_payment(request):
                 reference_number=form.cleaned_data['reference_number'],
             )
             messages.success(request, 'Payment submitted successfully!')
-            return redirect('tenant_home')
+            return redirect('tenant_payment')
     else:
         form = PaymentForm()
 
