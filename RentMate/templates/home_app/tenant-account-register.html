@@ -121,7 +121,7 @@
                 <div class="form-group">
                     <label>Password</label>
                     <input type="text" id="password" name="password" value="{{ form.password.value|default_if_none:'' }}" 
-                           placeholder="Auto-generated from Last Name" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+                           placeholder="Auto-generated from Last Name" {% if not edit_mode %}readonly style="background-color: #f0f0f0; cursor: not-allowed;"{% endif %}>
                     <small style="color: #666; font-size: 12px;">Format: LastName123456</small>
                     {% if form.password.errors %}
                         <div class="error-message">{{ form.password.errors.0 }}</div>
@@ -133,9 +133,12 @@
                     document.addEventListener('DOMContentLoaded', function() {
                         const lastNameInput = document.getElementById('last_name');
                         const passwordInput = document.getElementById('password');
-                        
+
+                         const shouldAutoGenerate = passwordInput.value.trim() === "";
+
                         // Function to generate password
                         function generatePassword() {
+                            if (!shouldAutoGenerate) return;
                             const lastName = lastNameInput.value.trim();
                             if (lastName) {
                                 // Format: LastName123456
@@ -149,8 +152,10 @@
                         generatePassword();
                         
                         // Update password when last name changes
-                        lastNameInput.addEventListener('input', generatePassword);
-                        lastNameInput.addEventListener('change', generatePassword);
+                        if (shouldAutoGenerate) {
+                            lastNameInput.addEventListener('input', generatePassword);
+                            lastNameInput.addEventListener('change', generatePassword);
+                        }
                     });
                 </script>
                 <h3>Renting Information</h3>

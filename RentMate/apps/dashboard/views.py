@@ -217,6 +217,11 @@ def edit_tenant(request, tenant_id):
         if form.is_valid():
             if 'password' in form.cleaned_data and form.cleaned_data['password']:
                 tenant.password = make_password(form.cleaned_data['password'])
+            status_value = form.cleaned_data['status']
+            if status_value ==  "Active":
+                tenant.is_active = True
+            else:
+                tenant.is_active = False
             form.save()
             tenant.save()
             messages.success(request, 'Tenant updated successfully!')
@@ -248,10 +253,16 @@ def tenant_login(request):
 
         if check_password(password, tenant.password):
             request.session["tenant_id"] = tenant.id
-
             if tenant.first_login:
                 messages.info(request, "Update password required.")
                 return redirect("tenant_change_password")
+
+            if datetime.today().date() > tenant.lease_end:
+                tenant.is_active = False
+
+            if not tenant.is_active:
+                messages.error(request, "In active Account.")
+                return redirect("tenant_login")
 
             tenant.is_active = True
             tenant.save()
@@ -284,6 +295,7 @@ def tenant_change_password(request):
         if password == confirm_password:
             tenant.password = make_password(password)
             tenant.first_login = False
+            tenant.status = "Active"
             tenant.is_active = True
             tenant.save()
             messages.success(request, "Password updated successfully! You can now login.")
