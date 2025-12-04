@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Maintenance Request | RentMate</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landlord-payment-update.css' %}">
 </head>
 <body>
     <!-- Sidebar (same as maintenance list) -->
@@ -104,13 +105,6 @@
                         <option value="Disapproved" {% if payment.status == "Disapproved" %}selected{% endif %}>Disapproved</option>
                     </select>
                 </div>
-
-                <div class="form-group">
-                        <label for="date_verified">Completion Date</label>
-                        <input type="date" id="date_verified" name="date_verified"
-                        value="{{ payment.date_verified|date:'Y-m-d' }}" class="form-control">
-                </div>
-
                 <div class="form-actions">
                     <button type="submit" class="btn-save">Save Updates</button>
                     <a href="{% url 'landlord_payments_list' %}" class="btn-cancel">Cancel</a>

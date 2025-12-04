@@ -10,6 +10,7 @@ from django.db.models import Sum
 from collections import namedtuple
 from datetime import datetime
 from datetime import date
+from django.utils import timezone
 from decimal import Decimal
 from django.db.models import Q
 from django.views.decorators.http import require_POST
@@ -353,7 +354,7 @@ def tenant_maintenance_add_view(request):
         return redirect('tenant_login')
 
     tenant = Tenant.objects.get(id=tenant_id)
-    maintenance_requests = MaintenanceRequest.objects.filter(requester=tenant).order_by('-date_requested')[:5]
+    maintenance_requests = MaintenanceRequest.objects.filter(requester=tenant).order_by('-date_requested')
 
     if request.method == 'POST':
         problems = request.POST.getlist('problem[]')
@@ -418,9 +419,11 @@ def tenant_payment(request):
                 reference_number=form.cleaned_data['reference_number'],
             )
             messages.success(request, 'Payment submitted successfully!')
-            return redirect('tenant_home')
+            return redirect('tenant_payment')
     else:
         form = PaymentForm()
+
+    payments = Payment.objects.filter(tenant=tenant).order_by('-created_at')
 
     return render(request, 'home_app_tenant/tenant-payment.html', {
         'form': form,
@@ -429,6 +432,8 @@ def tenant_payment(request):
     })
 
 
+from django.utils import timezone
+
 @never_cache
 def tenant_maintenance_edit_view(request, request_id):
     tenant_id = request.session.get("tenant_id")
@@ -436,22 +441,31 @@ def tenant_maintenance_edit_view(request, request_id):
         messages.info(request, "Please log in to continue")
         return redirect('tenant_login')
 
-    maintenance_request = get_object_or_404(MaintenanceRequest, id=request_id, requester_id=tenant_id)
+    maintenance_request = get_object_or_404(
+        MaintenanceRequest, id=request_id, requester_id=tenant_id
+    )
 
     if maintenance_request.request_status in ["Approved", "Completed"]:
         messages.error(request, "You cannot edit an approved or completed request.")
-        return redirect('tenant_home')
+        return redirect('tenant_maintenance')
 
     if request.method == 'POST':
         form = MaintenanceRequestForm(request.POST, instance=maintenance_request)
         if form.is_valid():
-            form.save()
+            obj = form.save(commit=False)
+            # set completion_date to today on update
+            obj.completion_date = timezone.localtime().date()
+            obj.save()
             messages.success(request, "Maintenance request updated successfully!")
-            return redirect('tenant_home')
+            return redirect('tenant_maintenance')
     else:
         form = MaintenanceRequestForm(instance=maintenance_request)
 
-    return render(request, 'home_app_tenant/tenant-maintenance-edit.html', {'form': form})
+    return render(request, 'home_app_tenant/tenant-maintenance-edit.html', {
+        'form': form,
+        'maintenance_request': maintenance_request,
+    })
+
 
 
 @never_cache
@@ -553,25 +567,19 @@ def landlord_maintenance_update_view(request, request_id):
 
     if request.method == "POST":
         remarks = request.POST.get("remarks")
-        completion_date = request.POST.get("completion_date")
 
         maintenance_request.remarks = remarks
 
         if remarks == "Done":
             maintenance_request.request_status = "Completed"
-            if completion_date:
-                maintenance_request.completion_date = datetime.strptime(completion_date, "%Y-%m-%d").date()
-            else:
-                maintenance_request.completion_date = timezone.localtime().date()
+            maintenance_request.completion_date = datetime.now().date()
         elif remarks == "Canceled":
             maintenance_request.request_status = "Canceled"
             maintenance_request.completion_date = None
         else:
+            # e.g. "On-going" / anything else you use
             maintenance_request.request_status = "Pending"
-            if completion_date:
-                maintenance_request.completion_date = datetime.strptime(completion_date, "%Y-%m-%d").date()
-            else:
-                maintenance_request.completion_date = None
+            maintenance_request.completion_date = None
 
         maintenance_request.save()
         messages.success(request, "Maintenance request updated successfully.")
