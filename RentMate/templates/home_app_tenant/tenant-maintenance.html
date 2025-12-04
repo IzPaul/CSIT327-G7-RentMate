@@ -75,7 +75,13 @@
         <div class="content-wrapper">
             <div class="history-section left-section">
                 <div class="profile-card">
-                    <div class="profile-avatar"></div>
+                    {% if tenant.profile_picture %}
+                        <img src="{{ tenant.profile_picture.url }}" alt="{{ tenant.first_name }} {{ tenant.last_name }}" class="avatar-img">
+                    {% else %}
+                        <div class="avatar-placeholder">
+                            {{ tenant.first_name|slice:":1" }}{{ tenant.last_name|slice:":1" }}
+                        </div>
+                    {% endif %}
                     <h3 class="profile-name">{{ tenant.first_name }} {{ tenant.last_name }}</h3>
                     <p class="profile-phone">{{ tenant.phone_number }}</p>
                 </div>

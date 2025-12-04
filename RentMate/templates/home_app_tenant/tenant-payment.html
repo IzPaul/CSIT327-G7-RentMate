@@ -76,9 +76,9 @@
             {% if messages %}
                 {% for message in messages %}
                     {% if message.tags == 'error' %}
-                        <div class="error-message">{{ message }}</div>
+                        <div class="error-message" role="alert">{{ message }}</div>
                     {% else %}
-                        <div class="success-message">{{ message }}</div>
+                        <div class="success-message" role="alert">{{ message }}</div>
                     {% endif %}
                 {% endfor %}
             {% endif %}
@@ -130,23 +130,45 @@
 
                 <div class="payment-info-card">
                     <h3>Payment History</h3>
-                <ul>
-                    {% if payments %}
-                    {% for p in payments %}
-                <li>
-                    <strong>{{ p.title }}</strong><br>
-                    {{ p.created_at|date:"M d, Y" }} -
-                    ₱{{ p.amount }} -
-                    {{ p.get_status_display|default:p.status }}
-                </li>
-                    {% endfor %}
-                    {% else %}
-                    <li>No payments yet.</li>
-                    {% endif %}
-                </ul>
-            </div>
+
+                    <!-- THIS WRAPPER WAS MISSING IN YOUR TEMPLATE -->
+                    <div class="scroll-content">
+                        <ul>
+                            {% if payments %}
+                                {% for p in payments %}
+                                    <li>
+                                        <strong>{{ p.title }}</strong><br>
+                                        {{ p.created_at|date:"M d, Y" }} - ₱{{ p.amount }} - {{ p.get_status_display|default:p.status }}
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <li>No payments yet.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.success-message, .error-message');
+
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                alert.classList.add('fade-out');
+
+                alert.addEventListener('transitionend', function() {
+                    if (alert.parentNode) {
+                        alert.parentNode.removeChild(alert);
+                    }
+                });
+            }, 3000);
+        });
+    });
+</script>
 </body>
 </html>

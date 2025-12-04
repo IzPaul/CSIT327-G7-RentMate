@@ -211,7 +211,7 @@ def tenant_register(request):
 
 
 def edit_tenant(request, tenant_id):
-    tenant = get_object_or_404(Tenant, id=tenant_id)
+    tenant = get_object_or_404(Tenant, id=tenant_id, assigned_landlord=request.user)
     if request.method == 'POST':
         form = TenantRegisterForm(request.POST, instance=tenant)
         if form.is_valid():
@@ -227,7 +227,7 @@ def edit_tenant(request, tenant_id):
 
 
 def delete_tenant(request, tenant_id):
-    tenant = get_object_or_404(Tenant, id=tenant_id)
+    tenant = get_object_or_404(Tenant, id=tenant_id, assigned_landlord=request.user)
     tenant.delete()
     messages.success(request, 'Tenant deleted successfully.')
     return redirect('tenant_list')
@@ -595,7 +595,7 @@ def landlord_maintenance_update_view(request, request_id):
 @login_required(login_url='landlord_login')
 def landlord_payments_list_view(request):
 
-    payments = Payment.objects.filter(tenant__assigned_landlord=request.user).order_by('-created_at')
+    payments = Payment.objects.filter(tenant__assigned_landlord=request.user).order_by('created_at')
 
     return render(request, 'home_app/landlord-payments-list.html', {
         "payments": payments
@@ -675,7 +675,7 @@ def landlord_leases_view(request):
 
 @login_required(login_url='landlord_login')
 def landlord_lease_details_view(request, tenant_id):
-    tenant = get_object_or_404(Tenant, id=tenant_id)
+    tenant = get_object_or_404(Tenant, id=tenant_id, assigned_landlord=request.user)
 
     today = datetime.now().date()
     days_remaining = (tenant.lease_end - today).days
@@ -695,7 +695,7 @@ def landlord_lease_details_view(request, tenant_id):
 
 @login_required(login_url='landlord_login')
 def landlord_tenant_profile_view(request, tenant_id):
-    tenant = get_object_or_404(Tenant, id=tenant_id)
+    tenant = get_object_or_404(Tenant, id=tenant_id, assigned_landlord=request.user)
     approved_payments = Payment.objects.filter(tenant=tenant, status="Approved").order_by('date_verified')
     activities = Payment.objects.filter(tenant=tenant).exclude(status="Approved").order_by('created_at')
     requests = MaintenanceRequest.objects.filter(requester=tenant).order_by('date_requested')

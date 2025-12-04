@@ -1,0 +1,114 @@
+.maintenance-table-container {
+    background-color: #3a3a3a;
+    border-radius: 16px;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+    margin-top: 20px;
+    max-height: 75vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.maintenance-table-wrapper {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(75vh - 72px);
+}
+
+.maintenance-table {
+    width: 100%;
+    border-collapse: separate !important;
+    border-spacing: 0;
+    color: #f1f1f1;
+    font-size: 14.5px;
+    table-layout: fixed;
+}
+
+.maintenance-table th:nth-child(1),  .maintenance-table td:nth-child(1)  { width: 15%; } /* Tenant */
+.maintenance-table th:nth-child(2),  .maintenance-table td:nth-child(2)  { width: 16%; } /* Title */
+.maintenance-table th:nth-child(3),  .maintenance-table td:nth-child(3)  { width: 10%; } /* Amount */
+.maintenance-table th:nth-child(4),  .maintenance-table td:nth-child(4)  { width: 10%; } /* Platform */
+.maintenance-table th:nth-child(5),  .maintenance-table td:nth-child(5)  { width: 15%; } /* Reference ID */
+.maintenance-table th:nth-child(6),  .maintenance-table td:nth-child(6)  { width: 10%; } /* Status */
+.maintenance-table th:nth-child(7),  .maintenance-table td:nth-child(7)  { width: 10%; } /* Date Submitted */
+.maintenance-table th:nth-child(8),  .maintenance-table td:nth-child(8)  { width: 10%; } /* Date Verified */
+.maintenance-table th:nth-child(9),  .maintenance-table td:nth-child(9)  { width: 14%; } /* Action */
+
+.maintenance-table thead th {
+    padding: 22px 24px;
+    font-weight: 600;
+    font-size: 13.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: white;
+}
+
+.maintenance-table tbody td {
+    padding: 22px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    vertical-align: middle;
+}
+
+.maintenance-table td:last-child {
+    text-align: center;
+    padding: 18px 24px;
+}
+
+.maintenance-table .status {
+    padding: 9px 18px;
+    font-size: 13px;
+}
+
+.maintenance-table .btn-update {
+    padding: 10px 24px;
+    font-size: 14px;
+    min-width: 100px;
+}
+
+.maintenance-table .no-data {
+    padding: 60px 0;
+    font-size: 17px;
+}
+
+.maintenance-table tbody tr:hover {
+    background-color: #383838;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.clickable-row:hover {
+    background-color: #383838 !important;
+    transform: translateY(-2px);
+}
+
+.maintenance-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: linear-gradient(135deg, #4f63f2, #3746b6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.truncate-10 {
+    display: block;
+    width: 100% !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.truncate-10[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 120%;
+    background: #1a1a1a;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    white-space: nowrap;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    z-index: 1000;
+}

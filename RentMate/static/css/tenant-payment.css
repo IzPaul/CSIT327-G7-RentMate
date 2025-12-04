@@ -1,8 +1,20 @@
+.success-message,
+.error-message {
+    transition: opacity 0.6s ease, transform 0.4s ease;
+}
+
+.fade-out {
+    margin-top: -68px;
+    opacity: 0 !important;
+    transform: translateX(-50%) translateY(-30px) !important;
+}
+
 .payment-wrapper {
     display: flex;
     gap: 40px;
     align-items: flex-start;
     flex-wrap: wrap;
+    padding: 30px 40px;
 }
 
 .payment-form-card {
@@ -17,6 +29,7 @@
 .payment-form-card h2 {
     font-size: 22px;
     margin-bottom: 18px;
+    color: white;
 }
 
 .payment-form {
@@ -56,61 +69,118 @@
     background: linear-gradient(135deg, #5c7cff, #4169e1);
     color: white;
     border: none;
-    padding: 12px 0;
+    padding: 14px 0;
     border-radius: 10px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .payment-form .btn-submit:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 18px rgba(65, 105, 225, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(65, 105, 225, 0.4);
 }
 
 .payment-form .error-message {
     margin-top: 6px;
-    padding: 8px 10px;
-    background-color: rgba(239, 68, 68, 0.1);
+    padding: 8px 12px;
+    background-color: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.4);
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 13px;
     color: #fca5a5;
 }
 
 .payment-info-card {
     background-color: #3a3a3a;
-    padding: 28px;
     border-radius: 16px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
     flex: 1;
-    min-width: 240px;
+    min-width: 300px;
+    max-height: 70vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: #555 #3a3a3a;
 }
 
 .payment-info-card h3 {
-    font-size: 20px;
-    margin-bottom: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #3a3a3a;
+    padding: 24px 28px 16px 28px;
+    margin: 0;
+    font-size: 21px;
+    font-weight: 600;
+    color: white;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.payment-info-card .scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 28px 28px 28px;
+    border-radius: 0 0 16px 16px;
 }
 
 .payment-info-card ul {
     list-style: none;
+    margin: 0;
+    padding: 0;
     display: grid;
-    gap: 12px;
+    gap: 14px;
 }
 
 .payment-info-card li {
     background-color: #2d2d2d;
-    padding: 14px 16px;
-    border-radius: 10px;
-    font-size: 14px;
-    line-height: 1.5;
+    padding: 16px 18px;
+    border-radius: 12px;
     border: 1px solid #444;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: #e0e0e0;
+    word-break: break-word;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payment-info-card .scroll-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.payment-info-card .scroll-content::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 12px 0;
+}
+
+.payment-info-card .scroll-content::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 10px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+}
+
+.payment-info-card .scroll-content::-webkit-scrollbar-thumb:hover {
+    background: #777;
+    background-clip: content-box;
 }
 
 @media (max-width: 960px) {
+    .payment-wrapper {
+        flex-direction: column;
+        padding: 20px;
+    }
+
     .payment-form-card,
     .payment-info-card {
         max-width: 100%;
+    }
+
+    .payment-info-card {
+        max-height: 60vh;
     }
 }
