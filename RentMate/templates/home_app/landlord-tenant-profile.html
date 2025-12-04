@@ -79,14 +79,6 @@
             </div>
         </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-
     <!-- Tenant Profile Layout -->
     <div class="tenant-profile-layout">
         <div class="tenant-avatar-section">
@@ -128,9 +120,7 @@
                 </div>
                 <div class="info-row">
                     <span class="label">Location:</span>
-<!--------------------------not finished need to be updated when unit model is made---------------------------->
-                    <span class="value">{{ tenant.unit|default:"—" }}</span>
-<!--------------------------not finished need to be updated when unit model is made---------------------------->
+                    <span class="value">{{ tenant.address|default:"—" }}</span>
                 </div>
                 <div class="info-row">
                     <span class="label">Deposit:</span>

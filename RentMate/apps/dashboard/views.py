@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.hashers import check_password, make_password
@@ -17,6 +18,7 @@ from .forms import TenantRegisterForm, MaintenanceRequestForm, LandlordMaintenan
 from .models import Tenant, MaintenanceRequest, Payment, MonthlyBilling
 from django.views.decorators.cache import never_cache
 from dateutil.relativedelta import relativedelta
+import os
 
 
 # --- LANDLORD SIDE ---
@@ -107,24 +109,32 @@ def tenant_list_view(request):
 import threading
 
 class EmailThread(threading.Thread):
-    def __init__(self, subject, message, from_email, recipient_list):
+    def __init__(self, subject, html_content, from_email, to_emails):
         self.subject = subject
-        self.message = message
+        self.html_content = html_content
         self.from_email = from_email
-        self.recipient_list = recipient_list
+        self.to_emails = to_emails
         threading.Thread.__init__(self)
 
     def run(self):
         try:
-            send_mail(
-                self.subject,
-                self.message,
-                self.from_email,
-                self.recipient_list,
-                fail_silently=False
+            # Create SendGrid email message
+            message = Mail(
+                from_email=self.from_email,
+                to_emails=self.to_emails,
+                subject=self.subject,
+                html_content=self.html_content
             )
+            
+            # Send via SendGrid API
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            print(f"Email sent successfully!")
+            print(f"Status Code: {response.status_code}")
+            print(f"Response Body: {response.body}")
+            print(f"Response Headers: {response.headers}")
         except Exception as e:
-            print(f"Error sending email in background: {e}")
+            print(f"Error sending email: {e}")
 
 def tenant_register(request):
     if not request.user.is_authenticated:
@@ -147,23 +157,48 @@ def tenant_register(request):
             
             # Send email in background to avoid timeout
             email_subject = 'Your Tenant Account - RentMate'
-            email_message = f"""
-Hi {tenant.first_name},
-
-Your account has been created.
-
-Email: {tenant.email}
-Temporary Password: {temp_password}
-
-Please log in at: [https://rentmate-h3m7.onrender.com/home/tenant/login/]
-
-Thank you,
-RentMate Team
-"""
+            html_content = f"""
+            <html>
+                <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                    <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+                        <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                            Welcome to RentMate!
+                        </h2>
+                        <p>Hi <strong>{tenant.first_name}</strong>,</p>
+                        <p>Your tenant account has been successfully created. Below are your login credentials:</p>
+                        
+                        <div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #3498db; margin: 20px 0;">
+                            <p style="margin: 5px 0;"><strong>Email:</strong> {tenant.email}</p>
+                            <p style="margin: 5px 0;"><strong>Temporary Password:</strong> {temp_password}</p>
+                        </div>
+                        
+                        <p>Please log in using the link below:</p>
+                        <p style="text-align: center; margin: 30px 0;">
+                            <a href="https://rentmate-h3m7.onrender.com/home/tenant/login/" 
+                               style="background-color: #3498db; color: white; padding: 12px 30px; 
+                               text-decoration: none; border-radius: 5px; display: inline-block;">
+                                Login to Your Account
+                            </a>
+                        </p>
+                        
+                        <p style="color: #e74c3c; font-size: 14px;">
+                            <strong>Important:</strong> For security reasons, you will be required to change your password on first login.
+                        </p>
+                        
+                        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+                        
+                        <p style="color: #7f8c8d; font-size: 12px;">
+                            Thank you for using RentMate!<br>
+                            If you have any questions, please contact your landlord.
+                        </p>
+                    </div>
+                </body>
+            </html>
+            """
             EmailThread(
                 email_subject,
-                email_message,
-                settings.EMAIL_HOST_USER,
+                html_content,
+                settings.DEFAULT_FROM_EMAIL,
                 [tenant.email]
             ).start()
 
@@ -272,24 +307,14 @@ def tenant_home(request):
     requests = MaintenanceRequest.objects.filter(requester=tenant).order_by('-date_requested')
 
     pending_count = requests.filter(request_status='Pending').count()
-    approved_count = requests.filter(request_status='Approved').count()
-    completed_count = requests.filter(request_status='Completed').count()
 
     today = datetime.now().date()
     days_remaining = (tenant.lease_end - today).days
-    if days_remaining > 30:
-        months = days_remaining // 30
-        remaining_days = days_remaining % 30
-        lease_remaining = f"{months} month{'s' if months > 1 else ''}"
-        if remaining_days > 0:
-            lease_remaining += f" and {remaining_days} day{'s' if remaining_days > 1 else ''}"
-    else:
-        lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
+    lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
 
-    lease_duration_months = (tenant.lease_end - tenant.lease_start).days // 30
-    initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
-    total_paid = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
-    outstanding_balance = initial_balance - total_paid
+    total_charges = tenant.monthly_bills.filter(billing_month__lte=date.today().replace(day=1)).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+    total_payments = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    outstanding_balance = total_charges - total_payments
 
     payment_status = ("Paid" if outstanding_balance <= 0 else "Unpaid")
 
@@ -297,8 +322,6 @@ def tenant_home(request):
         "tenant": tenant,
         "requests": requests,
         "pending_count": pending_count,
-        "approved_count": approved_count,
-        "completed_count": completed_count,
         "payment_status": payment_status,
         "lease_remaining": lease_remaining,
         "outstanding_balance": outstanding_balance,
@@ -383,6 +406,7 @@ def tenant_payment(request):
         return redirect('tenant_login')
 
     tenant = Tenant.objects.get(id=tenant_id)
+    payments = Payment.objects.filter(tenant=tenant).order_by('-created_at')
 
     if request.method == 'POST':
         form = PaymentForm(request.POST)
@@ -471,20 +495,11 @@ def tenant_lease_view(request):
 
     today = datetime.now().date()
     days_remaining = (tenant.lease_end - today).days
-    if days_remaining > 30:
-        months = days_remaining // 30
-        remaining_days = days_remaining % 30
-        lease_remaining = f"{months} month{'s' if months > 1 else ''}"
-        if remaining_days > 0:
-            lease_remaining += f" and {remaining_days} day{'s' if remaining_days > 1 else ''}"
-    else:
-        lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
+    lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
 
-    lease_duration_months = (today - tenant.lease_start).days // 30
-    initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
-    total_paid = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
-    outstanding_balance = initial_balance - total_paid
-
+    total_charges = tenant.monthly_bills.filter(billing_month__lte=date.today().replace(day=1)).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+    total_payments = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    outstanding_balance = total_charges - total_payments
 
     return render(request, 'home_app_tenant/tenant-lease.html',{
         "tenant": tenant,
@@ -521,7 +536,7 @@ def home_view(request):
         payment_count = Payment.objects.filter(status="Pending").count()
 
         # Maintenance requests
-        requests = MaintenanceRequest.objects.all()
+        requests = MaintenanceRequest.objects.filter(requester__assigned_landlord=request.user).order_by('-date_requested')
         pending_count = requests.filter(request_status='Pending').count()
 
         context = {
@@ -648,15 +663,10 @@ def landlord_leases_view(request):
         if not tenant.lease_start or not tenant.lease_end:
             outstanding_balance = Decimal('0.00')
         else:
-            lease_duration_months = (today - tenant.lease_start).days // 30
-            months_to_charge = 1 if lease_duration_months == 0 else lease_duration_months
-            initial_balance = tenant.rent * Decimal(months_to_charge)
+            total_charges = tenant.monthly_bills.filter(billing_month__lte=date.today().replace(day=1)).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+            total_payments = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+            outstanding_balance = total_charges - total_payments
 
-            total_paid = tenant.payments.filter(status="Approved").aggregate(
-                total=Sum('amount')
-            )['total'] or Decimal('0.00')
-
-            outstanding_balance = initial_balance - total_paid
         lease_data.append(LeaseRow(tenant=tenant, outstanding_balance=outstanding_balance))
 
     return render(request, 'home_app/landlord-leases.html', {
@@ -669,20 +679,11 @@ def landlord_lease_details_view(request, tenant_id):
 
     today = datetime.now().date()
     days_remaining = (tenant.lease_end - today).days
-    if days_remaining > 30:
-        months = days_remaining // 30
-        remaining_days = days_remaining % 30
-        lease_remaining = f"{months} month{'s' if months > 1 else ''}"
-        if remaining_days > 0:
-            lease_remaining += f" and {remaining_days} day{'s' if remaining_days > 1 else ''}"
-    else:
-        lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
+    lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
 
-    lease_duration_months = (today - tenant.lease_start).days // 30
-    initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
-    total_paid = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
-    outstanding_balance = initial_balance - total_paid
-
+    total_charges = tenant.monthly_bills.filter(billing_month__lte=date.today().replace(day=1)).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+    total_payments = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    outstanding_balance = total_charges - total_payments
 
     return render(request, 'home_app/landlord-lease-full-details.html',{
         "tenant": tenant,

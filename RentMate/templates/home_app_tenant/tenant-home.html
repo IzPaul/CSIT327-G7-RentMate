@@ -94,10 +94,12 @@
 
             <div class="card">
                 <div class="card-label">Maintenance Requests</div>
-                <div class="card-title">{{ requests.count }}</div>
-                <div class="card-subtitle">
-                    {{ pending_count }} Pending • {{ approved_count }} Approved • {{ completed_count }} Completed
-                </div>
+                <div class="card-title">{{ pending_count }} Pending</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Lease Ends In</div>
+                <div class="card-title">{{lease_remaining}}</div>
+                <div class="card-subtitle">{{tenant.lease_end}}</div>
             </div>
         </div>
 

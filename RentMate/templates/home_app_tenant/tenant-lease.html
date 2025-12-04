@@ -95,9 +95,6 @@
         <div class="stat-value balance {% if outstanding_balance > 0 %}negative{% elif outstanding_balance < 0 %}positive{% else %}zero{% endif %}">
             ₱{{ outstanding_balance|floatformat:2 }}
         </div>
-        <div class="stat-sub">
-            {% if outstanding_balance > 0 %}Due now{% elif outstanding_balance < 0 %}Credit available{% else %}Paid in full{% endif %}
-        </div>
     </div>
 
     <div class="stat-item">
@@ -109,30 +106,6 @@
     </div>
 
     <div class="lease-grid">
-        <div class="info-card">
-            <div class="card-header">
-                <h3>Tenant Information</h3>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-            </div>
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="label">Full Name</span>
-                    <span class="value">{{ tenant.first_name }} {{ tenant.last_name }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="label">Email</span>
-                    <span class="value">{{ tenant.email }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="label">Phone</span>
-                    <span class="value">{{ tenant.phone_number|default:"—" }}</span>
-                </div>
-            </div>
-        </div>
-
         <div class="info-card">
             <div class="card-header">
                 <h3>Unit Information</h3>
