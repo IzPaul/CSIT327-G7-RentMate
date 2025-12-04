@@ -587,7 +587,7 @@ def landlord_maintenance_update_view(request, request_id):
 @login_required(login_url='landlord_login')
 def landlord_payments_list_view(request):
 
-    payments = Payment.objects.filter(tenant__assigned_landlord=request.user).order_by('-created_at')
+    payments = Payment.objects.filter(tenant__assigned_landlord=request.user).order_by('created_at')
 
     return render(request, 'home_app/landlord-payments-list.html', {
         "payments": payments
