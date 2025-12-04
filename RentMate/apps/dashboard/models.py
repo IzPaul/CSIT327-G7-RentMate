@@ -73,3 +73,30 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.amount} ({self.method}) - {self.status}"
+
+
+class MonthlyBilling(models.Model):
+    STATUS_CHOICES = [
+        ("Unpaid", "Unpaid"),
+        ("Paid", "Paid"),
+        ("Overdue", "Overdue"),
+    ]
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="monthly_bills")
+    bill_month = models.IntegerField()  # 1-12
+    bill_year = models.IntegerField()
+    due_date = models.DateField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Unpaid")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['bill_year', 'bill_month']
+        unique_together = ['tenant', 'bill_month', 'bill_year']
+
+    def __str__(self):
+        return f"{self.tenant.first_name} {self.tenant.last_name} - {self.bill_month}/{self.bill_year} - {self.status}"
+    
+    def get_bill_for_display(self):
+        """Returns formatted month and year for display"""
+        from datetime import date
+        return date(self.bill_year, self.bill_month, 1).strftime("%B %Y")

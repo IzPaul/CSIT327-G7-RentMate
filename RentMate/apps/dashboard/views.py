@@ -12,11 +12,39 @@ from decimal import Decimal
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from .forms import TenantRegisterForm, MaintenanceRequestForm, LandlordMaintenanceUpdateForm, PaymentForm
-from .models import Tenant, MaintenanceRequest, Payment
+from .models import Tenant, MaintenanceRequest, Payment, MonthlyBilling
 from django.views.decorators.cache import never_cache
+from dateutil.relativedelta import relativedelta
 
 
 # --- LANDLORD SIDE ---
+
+def generate_monthly_billing_records(tenant):
+    """
+    Generate monthly billing records for a tenant from lease_start to lease_end.
+    Each record represents one month's rent due on the 1st of that month.
+    """
+    current_date = tenant.lease_start
+    
+    while current_date <= tenant.lease_end:
+        # Due date is the 1st of the month
+        due_date = date(current_date.year, current_date.month, 1)
+        
+        # Create billing record if it doesn't exist
+        MonthlyBilling.objects.get_or_create(
+            tenant=tenant,
+            bill_month=current_date.month,
+            bill_year=current_date.year,
+            defaults={
+                'due_date': due_date,
+                'amount': tenant.rent,
+                'status': 'Unpaid'
+            }
+        )
+        
+        # Move to next month
+        current_date = current_date + relativedelta(months=1)
+
 
 @login_required(login_url='landlord_login')
 def tenant_list_view(request):
@@ -74,6 +102,9 @@ def tenant_register(request):
             tenant.first_login = True
             tenant.status = 'Inactive'
             tenant.save()
+
+            # Generate monthly billing records
+            generate_monthly_billing_records(tenant)
 
             temp_password = form.cleaned_data['password']
             send_mail(
@@ -503,6 +534,22 @@ def approve_payment(request,payment_id):
     payment.status = "Approved"
     payment.date_verified = datetime.now().date()
     payment.save()
+    
+    # Update the corresponding monthly bill to "Paid"
+    # Use the payment's date_verified to determine which month to mark as paid
+    if payment.date_verified:
+        try:
+            monthly_bill = MonthlyBilling.objects.get(
+                tenant=payment.tenant,
+                bill_month=payment.date_verified.month,
+                bill_year=payment.date_verified.year
+            )
+            monthly_bill.status = "Paid"
+            monthly_bill.save()
+        except MonthlyBilling.DoesNotExist:
+            # If no matching monthly bill exists, we can just skip this step
+            pass
+    
     return redirect('landlord_payments_list')
 
 # Landlord - Tenant Profile View
@@ -513,10 +560,12 @@ def landlord_tenant_profile_view(request, tenant_id):
     approved_payments = Payment.objects.filter(tenant=tenant, status="Approved").order_by('date_verified')
     activities = Payment.objects.filter(tenant=tenant).exclude(status="Approved").order_by('created_at')
     requests = MaintenanceRequest.objects.filter(requester=tenant).order_by('date_requested')
+    monthly_bills = MonthlyBilling.objects.filter(tenant=tenant).order_by('bill_year', 'bill_month')
 
     return render(request, 'home_app/landlord-tenant-profile.html', {
         "tenant": tenant,
         "approved_payments": approved_payments,
         "activities": activities,
         "requests": requests,
+        "monthly_bills": monthly_bills,
     })
