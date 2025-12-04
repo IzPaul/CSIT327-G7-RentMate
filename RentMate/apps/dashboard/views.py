@@ -529,7 +529,7 @@ def home_view(request):
 
         # Count leases ending this month
         lease_renewal_count = Tenant.objects.filter(
-            tenant__assigned_landlord=request.user,
+            assigned_landlord=request.user,
             lease_end__month=current_month,
             lease_end__year=current_year
         ).count()
