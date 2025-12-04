@@ -306,8 +306,6 @@ def tenant_home(request):
     requests = MaintenanceRequest.objects.filter(requester=tenant).order_by('-date_requested')
 
     pending_count = requests.filter(request_status='Pending').count()
-    approved_count = requests.filter(request_status='Approved').count()
-    completed_count = requests.filter(request_status='Completed').count()
 
     today = datetime.now().date()
     days_remaining = (tenant.lease_end - today).days
@@ -323,8 +321,6 @@ def tenant_home(request):
         "tenant": tenant,
         "requests": requests,
         "pending_count": pending_count,
-        "approved_count": approved_count,
-        "completed_count": completed_count,
         "payment_status": payment_status,
         "lease_remaining": lease_remaining,
         "outstanding_balance": outstanding_balance,
@@ -526,7 +522,7 @@ def home_view(request):
         payment_count = Payment.objects.filter(status="Pending").count()
 
         # Maintenance requests
-        requests = MaintenanceRequest.objects.all()
+        requests = MaintenanceRequest.objects.filter(requester__assigned_landlord=request.user).order_by('-date_requested')
         pending_count = requests.filter(request_status='Pending').count()
 
         context = {
