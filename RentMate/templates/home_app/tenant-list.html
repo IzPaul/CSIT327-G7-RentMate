@@ -231,44 +231,29 @@
                     <div class="filter-columns">
                         <div class="filter-group">
                             <h4>Rental Status:</h4>
-                            <label><input type="radio" name="status" value="all" {% if current_status=='all' or not
-                                    current_status %}checked{% endif %}> All</label>
-                            <label><input type="radio" name="status" value="active" {% if current_status=='active'
-                                    %}checked{% endif %}> Active</label>
-                            <label><input type="radio" name="status" value="inactive" {% if current_status=='inactive'
-                                    %}checked{% endif %}> Inactive</label>
-                            <label><input type="radio" name="status" value="terminated" {% if
-                                    current_status=='terminated' %}checked{% endif %}> Terminated</label>
+                            <label><input type="radio" name="status" value="all" {% if current_status == 'all' or not current_status %}checked{% endif %}> All</label>
+                            <label><input type="radio" name="status" value="active" {% if current_status == 'active' %}checked{% endif %}> Active</label>
+                            <label><input type="radio" name="status" value="inactive" {% if current_status == 'inactive' %}checked{% endif %}> Inactive</label>
+                            <label><input type="radio" name="status" value="terminated" {% if current_status == 'terminated' %}checked{% endif %}> Terminated</label>
                         </div>
 
                         <div class="filter-group">
                             <h4>Payment Status:</h4>
-                            <label><input type="radio" name="payment" value="all" {% if current_payment=='all' or not
-                                    current_payment %}checked{% endif %}> All</label>
-                            <label><input type="radio" name="payment" value="paid" {% if current_payment=='paid'
-                                    %}checked{% endif %}> Paid</label>
-                            <label><input type="radio" name="payment" value="pending" {% if current_payment=='pending'
-                                    %}checked{% endif %}> Pending</label>
-                            <label><input type="radio" name="payment" value="overdue" {% if current_payment=='overdue'
-                                    %}checked{% endif %}> Overdue</label>
+                            <label><input type="radio" name="payment" value="all" {% if current_payment == 'all' or not current_payment %}checked{% endif %}> All</label>
+                            <label><input type="radio" name="payment" value="paid" {% if current_payment == 'paid' %}checked{% endif %}> Paid</label>
+                            <label><input type="radio" name="payment" value="pending" {% if current_payment == 'pending' %}checked{% endif %}> Pending</label>
+                            <label><input type="radio" name="payment" value="overdue" {% if current_payment == 'overdue' %}checked{% endif %}> Overdue</label>
                         </div>
 
                         <div class="filter-group">
                             <h4>Sort by:</h4>
-                            <label><input type="radio" name="sort" value="name" {% if current_sort=='name' %}checked{%
-                                    endif %}> Full Name</label>
-                            <label><input type="radio" name="sort" value="unit" {% if current_sort=='unit' %}checked{%
-                                    endif %}> Unit</label>
-                            <label><input type="radio" name="sort" value="start_date" {% if current_sort=='start_date'
-                                    %}checked{% endif %}> Start Date</label>
-                            <label><input type="radio" name="sort" value="end_date" {% if current_sort=='end_date'
-                                    %}checked{% endif %}> End Date</label>
-                            <label><input type="radio" name="sort" value="rent" {% if current_sort=='rent' %}checked{%
-                                    endif %}> Monthly Rent</label>
-                            <label><input type="radio" name="sort" value="payment_status" {% if
-                                    current_sort=='payment_status' %}checked{% endif %}> Payment Status</label>
-                            <label><input type="radio" name="sort" value="rental_status" {% if
-                                    current_sort=='rental_status' %}checked{% endif %}> Rental Status</label>
+                            <label><input type="radio" name="sort" value="name" {% if current_sort == 'name' %}checked{% endif %}> Full Name</label>
+                            <label><input type="radio" name="sort" value="unit" {% if current_sort == 'unit' %}checked{% endif %}> Unit</label>
+                            <label><input type="radio" name="sort" value="start_date" {% if current_sort == 'start_date' %}checked{% endif %}> Start Date</label>
+                            <label><input type="radio" name="sort" value="end_date" {% if current_sort == 'end_date' %}checked{% endif %}> End Date</label>
+                            <label><input type="radio" name="sort" value="rent" {% if current_sort == 'rent' %}checked{% endif %}> Monthly Rent</label>
+                            <label><input type="radio" name="sort" value="payment_status" {% if current_sort == 'payment_status' %}checked{% endif %}> Payment Status</label>
+                            <label><input type="radio" name="sort" value="rental_status" {% if current_sort == 'rental_status' %}checked{% endif %}> Rental Status</label>
                         </div>
                     </div>
 
