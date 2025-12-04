@@ -39,7 +39,7 @@ class Tenant(models.Model):
 class MaintenanceRequest(models.Model):
     requester = models.ForeignKey(Tenant, on_delete=models.CASCADE)
     date_requested = models.DateField()
-    maintenance_type = models.CharField(max_length=20)
+    maintenance_type = models.CharField(max_length=200)
     request_status = models.CharField(max_length=20, default="Pending")
     other_description = models.TextField(blank=True, default="")
     description = models.TextField()
