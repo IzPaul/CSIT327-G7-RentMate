@@ -133,13 +133,11 @@
                         {% for pay in payments %}
                         <tr class="clickable-row" data-href="{% url 'landlord_payments_update' pay.id %}">
                             <td><span class="truncate-10"
-                                    title="{{ pay.tenant.first_name }} {{ pay.tenant.last_name }}">{{
-                                    pay.tenant.first_name }} {{ pay.tenant.last_name }}</span></td>
+                                    title="{{ pay.tenant.first_name }} {{ pay.tenant.last_name }}">{{pay.tenant.first_name }} {{ pay.tenant.last_name }}</span></td>
                             <td><span class="truncate-10" title="{{ pay.title }}">{{ pay.title }}</span></td>
                             <td>{{ pay.amount }}</td>
                             <td>{{ pay.method }}</td>
-                            <td><span class="truncate-10" title="{{ pay.reference_number }}">{{ pay.reference_number
-                                    }}</span></td>
+                            <td><span class="truncate-10" title="{{ pay.reference_number }}">{{ pay.reference_number}}</span></td>
                             <td class="status {{ pay.status|lower }}">{{ pay.status }}</td>
                             <td>{{ pay.created_at|date:"m-d-Y" }}</td>
                             <td>{{ pay.date_verified|date:"m-d-Y"|default:"-" }}</td>
