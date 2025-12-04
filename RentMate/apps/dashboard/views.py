@@ -120,9 +120,10 @@ def tenant_register(request):
             generate_monthly_billing_records(tenant)
 
             temp_password = form.cleaned_data['password']
-            send_mail(
-                'Your Tenant Account - RentMate',
-                f"""
+            try:
+                send_mail(
+                    'Your Tenant Account - RentMate',
+                    f"""
 Hi {tenant.first_name},
 
 Your account has been created.
@@ -130,15 +131,18 @@ Your account has been created.
 Email: {tenant.email}
 Temporary Password: {temp_password}
 
-Please log in at: [http://127.0.0.1:8000/home/tenant/login/]
+Please log in at: [https://rentmate-h3m7.onrender.com/home/tenant/login/]
 
 Thank you,
 RentMate Team
 """,
-                settings.EMAIL_HOST_USER,
-                [tenant.email],
-                fail_silently=False
-            )
+                    settings.EMAIL_HOST_USER,
+                    [tenant.email],
+                    fail_silently=False
+                )
+            except Exception as e:
+                print(f"Error sending email: {e}")
+                messages.warning(request, "Tenant created, but failed to send email notification.")
 
             messages.success(request, 'Tenant created successfully! Credentials sent via email.')
             return redirect('tenant_list')

@@ -189,14 +189,13 @@ MIDDLEWARE = [
 
 # Database configuration (single source defined above via dj_database_url)
 
-# SendGrid Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'apikey'  # This is literally the string 'apikey'
-EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY', '')  # Your SendGrid API key from environment variable
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'rrentmate@gmail.com')  # Your verified sender email
+EMAIL_HOST_USER = 'rrentmate@gmail.com'  # your Gmail
+EMAIL_HOST_PASSWORD = 'fklsdkibesbcofba' # app password generated from Google Account
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Logging configuration to ensure exceptions are visible in Render logs
 LOGGING = {
