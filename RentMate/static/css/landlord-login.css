@@ -70,6 +70,36 @@ body {
     font-weight: 500;
 }
 
+/* wrapper for password + eye icon */
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper input {
+    width: 100%;
+    padding: 15px 50px 15px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease;
+}
+
+.password-input-wrapper i {
+    position: absolute;
+    right: 20px;
+    cursor: pointer;
+    color: #666;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.password-input-wrapper i:hover {
+    color: #333;
+}
+
 .form-group input {
     width: 100%;
     padding: 15px 20px;
@@ -80,7 +110,8 @@ body {
     transition: all 0.3s ease;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.password-input-wrapper input:focus {
     outline: none;
     background-color: white;
     box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.3);
