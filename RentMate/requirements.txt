@@ -11,4 +11,5 @@ sqlparse==0.5.3
 typing-extensions==4.15.0
 pytz==2025.2
 python-dateutil==2.9.0
+sendgrid==6.11.0
 # add any other project dependencies here
