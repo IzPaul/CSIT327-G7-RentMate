@@ -1,0 +1,131 @@
+.tenant-lease-page .main-content { padding: 0 !important; }
+
+.page-subheader {
+    padding: 20px 24px 12px;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.page-title p { font-size: 1rem; color: #bbb; margin-top: 6px; }
+
+.btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, #5c7cff, #4169E1);
+    color: white; padding: 10px 20px; border-radius: 12px;
+    font-weight: 600; font-size: 0.95rem; text-decoration: none;
+    box-shadow: 0 4px 15px rgba(65,105,225,0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(65,105,225,0.4); }
+
+/* Stats Bar */
+.lease-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 15px 24px 12px;
+    padding: 15px 24px;
+    background: rgba(65,105,225,0.1);
+    border: 1px solid rgba(65,105,225,0.25);
+    border-radius: 16px;
+}
+
+.stat-item { text-align: center; }
+.stat-item.highlight { background: rgba(65,105,225,0.18); padding: 14px; border-radius: 14px; border: 1px solid rgba(65,105,225,0.35); }
+
+.stat-label { font-size: 0.85rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+.stat-value { font-size: 1.3rem; font-weight: 700; color: #fff; margin: 6px 0; }
+.stat-value.balance {  font-size: 1.5rem; }
+.stat-value.balance.negative { background: linear-gradient(90deg, #fb7185, #fca5a5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.stat-value.balance.positive { background: linear-gradient(90deg, #86efac, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.stat-value.balance.zero { color: #86efac; }
+.stat-sub { font-size: 0.9rem; color: #ddd; }
+
+/* Cards */
+.lease-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 0 24px;
+    margin-bottom: 40px;
+}
+
+.info-card {
+    background: #343434;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.info-card.span-2 {
+    grid-column: span 2;
+    min-width: 0;
+ }
+
+.card-header {
+    padding: 16px 20px 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.card-header svg { opacity: 0.7; }
+
+.info-grid { padding: 18px 20px; display: grid; gap: 14px; }
+.info-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+.info-item { display: flex; flex-direction: column; gap: 4px; }
+.info-item.full { grid-column: span 2; }
+
+.label { font-size: 0.85rem; color: #aaa; font-weight: 500; }
+.value { font-size: 1rem; color: #fff; font-weight: 600; }
+.value.large { font-size: 1.5rem; font-weight: 700; background: linear-gradient(90deg, #4ade80, #86efac); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.value.highlight { color: #86efac; font-weight: 700; }
+
+.contract-link { color: #7c9eff; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.contract-link:hover { color: #a5b4fc; }
+.text-muted { color: #666; font-style: italic; }
+
+/* Responsive */
+@media (max-width: 992px) {
+    .lease-stats-bar, .lease-grid { margin-left: 16px; margin-right: 16px; }
+    .stat-value { font-size: 1.7rem; } .stat-value.balance { font-size: 2rem; }
+}
+@media (max-width: 768px) {
+    .page-subheader, .lease-grid { padding: 0 16px; }
+    .info-card.span-2 { grid-column: 1 / -1; }
+    .info-grid.cols-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 1200px) {
+    .lease-grid {
+        grid-template-columns: 1fr 1fr;   /* force exactly 2 columns */
+    }
+    .info-card.span-2 {
+        grid-column: 1 / -1;   /* full width on smaller screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .lease-grid {
+        grid-template-columns: 1fr;
+        padding: 0 16px;
+    }
+    .info-card.span-2 {
+        grid-column: 1 / -1;
+    }
+}
