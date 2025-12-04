@@ -515,7 +515,7 @@ def tenant_lease_view(request):
 def home_view(request):
     try:
         # Count active tenants
-        active_tenant_count = Tenant.objects.filter(status="Active").count()
+        active_tenant_count = Tenant.objects.filter(status="Active",assigned_landlord=request.user).count()
 
         # Calculate monthly revenue
         current_month = date.today().month
