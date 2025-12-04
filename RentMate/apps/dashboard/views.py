@@ -278,10 +278,9 @@ def tenant_home(request):
     days_remaining = (tenant.lease_end - today).days
     lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
 
-    lease_duration_months = (tenant.lease_end - tenant.lease_start).days // 30
-    initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
-    total_paid = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
-    outstanding_balance = initial_balance - total_paid
+    total_charges = tenant.monthly_bills.filter(billing_month__lte=date.today().replace(day=1)).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+    total_payments = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    outstanding_balance = total_charges - total_payments
 
     payment_status = ("Paid" if outstanding_balance <= 0 else "Unpaid")
 
@@ -451,11 +450,9 @@ def tenant_lease_view(request):
     days_remaining = (tenant.lease_end - today).days
     lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
 
-    lease_duration_months = (today - tenant.lease_start).days // 30
-    initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
-    total_paid = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
-    outstanding_balance = initial_balance - total_paid
-
+    total_charges = tenant.monthly_bills.filter(billing_month__lte=date.today().replace(day=1)).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+    total_payments = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    outstanding_balance = total_charges - total_payments
 
     return render(request, 'home_app_tenant/tenant-lease.html',{
         "tenant": tenant,
@@ -625,15 +622,10 @@ def landlord_leases_view(request):
         if not tenant.lease_start or not tenant.lease_end:
             outstanding_balance = Decimal('0.00')
         else:
-            lease_duration_months = (today - tenant.lease_start).days // 30
-            months_to_charge = 1 if lease_duration_months == 0 else lease_duration_months
-            initial_balance = tenant.rent * Decimal(months_to_charge)
+            total_charges = tenant.monthly_bills.filter(billing_month__lte=date.today().replace(day=1)).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+            total_payments = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+            outstanding_balance = total_charges - total_payments
 
-            total_paid = tenant.payments.filter(status="Approved").aggregate(
-                total=Sum('amount')
-            )['total'] or Decimal('0.00')
-
-            outstanding_balance = initial_balance - total_paid
         lease_data.append(LeaseRow(tenant=tenant, outstanding_balance=outstanding_balance))
 
     return render(request, 'home_app/landlord-leases.html', {
@@ -648,11 +640,9 @@ def landlord_lease_details_view(request, tenant_id):
     days_remaining = (tenant.lease_end - today).days
     lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
 
-    lease_duration_months = (today - tenant.lease_start).days // 30
-    initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
-    total_paid = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
-    outstanding_balance = initial_balance - total_paid
-
+    total_charges = tenant.monthly_bills.filter(billing_month__lte=date.today().replace(day=1)).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+    total_payments = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    outstanding_balance = total_charges - total_payments
 
     return render(request, 'home_app/landlord-lease-full-details.html',{
         "tenant": tenant,
