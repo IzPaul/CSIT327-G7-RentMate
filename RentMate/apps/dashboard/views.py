@@ -30,8 +30,8 @@ def generate_monthly_billing_records(tenant):
         # billing_month is the 1st of each month
         billing_month_date = date(current_date.year, current_date.month, 1)
         
-        # Due date is typically the 5th of the month (or configure as needed)
-        due_date = date(current_date.year, current_date.month, 5)
+        # Due date is the 1st of the month
+        due_date = date(current_date.year, current_date.month, 1)
         
         # Calculate total: rent + utilities + other charges
         total = tenant.rent
