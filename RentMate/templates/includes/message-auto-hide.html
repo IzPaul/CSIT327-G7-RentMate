@@ -1,0 +1,36 @@
+{% comment %}
+Auto-hide messages after 5 seconds with manual close button
+Include this file in any template that displays Django messages
+Usage: {% include 'includes/message-auto-hide.html' %}
+{% endcomment %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Auto-hide messages after 5 seconds
+        const messages = document.querySelectorAll('.success-message, .error-message, .info-message, .warning-message, .alert, .message');
+
+        messages.forEach(function (message) {
+            // Auto-hide after 5 seconds
+            setTimeout(function () {
+                message.style.transition = 'opacity 0.5s ease';
+                message.style.opacity = '0';
+                setTimeout(function () {
+                    message.remove();
+                }, 500);
+            }, 5000);
+
+            // Add close button
+            const closeBtn = document.createElement('span');
+            closeBtn.innerHTML = '×';
+            closeBtn.style.cssText = 'float: right; cursor: pointer; margin-left: 10px; font-size: 24px; line-height: 1; font-weight: bold;';
+            closeBtn.onclick = function () {
+                message.style.transition = 'opacity 0.3s ease';
+                message.style.opacity = '0';
+                setTimeout(function () {
+                    message.remove();
+                }, 300);
+            };
+            message.insertBefore(closeBtn, message.firstChild);
+        });
+    });
+</script>
