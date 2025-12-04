@@ -102,6 +102,28 @@ def tenant_list_view(request):
     })
 
 
+import threading
+
+class EmailThread(threading.Thread):
+    def __init__(self, subject, message, from_email, recipient_list):
+        self.subject = subject
+        self.message = message
+        self.from_email = from_email
+        self.recipient_list = recipient_list
+        threading.Thread.__init__(self)
+
+    def run(self):
+        try:
+            send_mail(
+                self.subject,
+                self.message,
+                self.from_email,
+                self.recipient_list,
+                fail_silently=False
+            )
+        except Exception as e:
+            print(f"Error sending email in background: {e}")
+
 def tenant_register(request):
     if not request.user.is_authenticated:
         return redirect('landlord_login')
@@ -120,10 +142,10 @@ def tenant_register(request):
             generate_monthly_billing_records(tenant)
 
             temp_password = form.cleaned_data['password']
-            try:
-                send_mail(
-                    'Your Tenant Account - RentMate',
-                    f"""
+            
+            # Send email in background to avoid timeout
+            email_subject = 'Your Tenant Account - RentMate'
+            email_message = f"""
 Hi {tenant.first_name},
 
 Your account has been created.
@@ -135,14 +157,13 @@ Please log in at: [https://rentmate-h3m7.onrender.com/home/tenant/login/]
 
 Thank you,
 RentMate Team
-""",
-                    settings.EMAIL_HOST_USER,
-                    [tenant.email],
-                    fail_silently=False
-                )
-            except Exception as e:
-                print(f"Error sending email: {e}")
-                messages.warning(request, "Tenant created, but failed to send email notification.")
+"""
+            EmailThread(
+                email_subject,
+                email_message,
+                settings.EMAIL_HOST_USER,
+                [tenant.email]
+            ).start()
 
             messages.success(request, 'Tenant created successfully! Credentials sent via email.')
             return redirect('tenant_list')
