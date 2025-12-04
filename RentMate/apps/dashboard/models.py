@@ -81,22 +81,29 @@ class MonthlyBilling(models.Model):
         ("Paid", "Paid"),
         ("Overdue", "Overdue"),
     ]
+    
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="monthly_bills")
-    bill_month = models.IntegerField(db_column='billing_month')  # 1-12 (db column is billing_month)
-    bill_year = models.IntegerField(db_column='billing_year')
-    due_date = models.DateField()
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    billing_month = models.DateField()  # Actual column name in DB
+    rent_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    water_bill = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    electricity_bill = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    other_charges = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    balance = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Unpaid")
+    due_date = models.DateField()
+    notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['bill_year', 'bill_month']
-        unique_together = ['tenant', 'bill_month', 'bill_year']
+        ordering = ['-billing_month']
+        db_table = 'dashboard_monthlybilling'
 
     def __str__(self):
-        return f"{self.tenant.first_name} {self.tenant.last_name} - {self.bill_month}/{self.bill_year} - {self.status}"
+        return f"{self.tenant.first_name} {self.tenant.last_name} - {self.billing_month.strftime('%B %Y')} - {self.status}"
     
     def get_bill_for_display(self):
         """Returns formatted month and year for display"""
-        from datetime import date
-        return date(self.bill_year, self.bill_month, 1).strftime("%B %Y")
+        return self.billing_month.strftime("%B %Y")

@@ -27,18 +27,31 @@ def generate_monthly_billing_records(tenant):
     current_date = tenant.lease_start
     
     while current_date <= tenant.lease_end:
-        # Due date is the 1st of the month
-        due_date = date(current_date.year, current_date.month, 1)
+        # billing_month is the 1st of each month
+        billing_month_date = date(current_date.year, current_date.month, 1)
+        
+        # Due date is typically the 5th of the month (or configure as needed)
+        due_date = date(current_date.year, current_date.month, 5)
+        
+        # Calculate total: rent + utilities + other charges
+        total = tenant.rent
+        balance = total
         
         # Create billing record if it doesn't exist
         MonthlyBilling.objects.get_or_create(
             tenant=tenant,
-            bill_month=current_date.month,
-            bill_year=current_date.year,
+            billing_month=billing_month_date,
             defaults={
+                'rent_amount': tenant.rent,
+                'water_bill': Decimal('0.00'),
+                'electricity_bill': Decimal('0.00'),
+                'other_charges': Decimal('0.00'),
+                'total_amount': total,
+                'amount_paid': Decimal('0.00'),
+                'balance': balance,
                 'due_date': due_date,
-                'amount': tenant.rent,
-                'status': 'Unpaid'
+                'status': 'Unpaid',
+                'notes': ''
             }
         )
         
@@ -539,12 +552,15 @@ def approve_payment(request,payment_id):
     # Use the payment's date_verified to determine which month to mark as paid
     if payment.date_verified:
         try:
+            # billing_month is stored as the 1st of each month
+            billing_month_date = date(payment.date_verified.year, payment.date_verified.month, 1)
             monthly_bill = MonthlyBilling.objects.get(
                 tenant=payment.tenant,
-                bill_month=payment.date_verified.month,
-                bill_year=payment.date_verified.year
+                billing_month=billing_month_date
             )
             monthly_bill.status = "Paid"
+            monthly_bill.amount_paid = monthly_bill.total_amount
+            monthly_bill.balance = Decimal('0.00')
             monthly_bill.save()
         except MonthlyBilling.DoesNotExist:
             # If no matching monthly bill exists, we can just skip this step
@@ -560,7 +576,7 @@ def landlord_tenant_profile_view(request, tenant_id):
     approved_payments = Payment.objects.filter(tenant=tenant, status="Approved").order_by('date_verified')
     activities = Payment.objects.filter(tenant=tenant).exclude(status="Approved").order_by('created_at')
     requests = MaintenanceRequest.objects.filter(requester=tenant).order_by('date_requested')
-    monthly_bills = MonthlyBilling.objects.filter(tenant=tenant).order_by('bill_year', 'bill_month')
+    monthly_bills = MonthlyBilling.objects.filter(tenant=tenant).order_by('billing_month')
 
     return render(request, 'home_app/landlord-tenant-profile.html', {
         "tenant": tenant,
