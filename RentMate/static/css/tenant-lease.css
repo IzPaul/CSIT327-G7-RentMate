@@ -23,7 +23,6 @@
 
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(65,105,225,0.4); }
 
-/* Stats Bar */
 .lease-stats-bar {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -46,7 +45,6 @@
 .stat-value.balance.zero { color: #86efac; }
 .stat-sub { font-size: 0.9rem; color: #ddd; }
 
-/* Cards */
 .lease-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -113,10 +111,10 @@
 }
 @media (max-width: 1200px) {
     .lease-grid {
-        grid-template-columns: 1fr 1fr;   /* force exactly 2 columns */
+        grid-template-columns: 1fr 1fr;
     }
     .info-card.span-2 {
-        grid-column: 1 / -1;   /* full width on smaller screens */
+        grid-column: 1 / -1;
     }
 }
 
