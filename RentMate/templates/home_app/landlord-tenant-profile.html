@@ -172,16 +172,23 @@
                 </div>
                 <div class="info-row">
                     <span class="label">Contract URL:</span>
-                    <span class="value">
-                        {% if tenant.contract_file %}
-                            <a href="{{ tenant.contract_file.url }}" target="_blank" class="contract-link">
-                                View Contract
+                    <div class="value">
+                        {% if tenant.contract_url %}
+                            <a href="{{ tenant.contract_url }}"
+                               target="_blank"
+                               rel="noopener"
+                               class="contract-link"
+                               id="contract-link">
+                               {{ tenant.contract_url }}
                             </a>
                         {% else %}
-                            —
+                            <span class="text-muted">No contract uploaded yet</span>
                         {% endif %}
-                    </span>
+                    </div>
                 </div>
+                <span id="contract-error" style="display:none; color:#fb7185; font-size:0.95rem; margin-top:8px;">
+                                Unable to access the document. Please try again later.
+                </span>
             </div>
         </div>
     </div>
@@ -316,6 +323,67 @@
             document.getElementById(btn.dataset.tab).classList.add('active');
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const link = document.getElementById('contract-link');
+    const errorMsg = document.getElementById('contract-error');
+    if (!link || !errorMsg) return;
+
+    let checked = false;
+    let isReachable = false;
+    let hideTimeout = null;
+
+    function showError() {
+        if (hideTimeout) clearTimeout(hideTimeout);
+
+        errorMsg.style.display = 'block';
+        link.style.opacity = '0.6';
+        link.title = 'Document unavailable';
+
+        hideTimeout = setTimeout(() => {
+            errorMsg.style.display = 'none';
+            link.style.opacity = '1';
+            link.title = '';
+        }, 5000);
+    }
+
+    function checkLink() {
+        if (checked) return;
+
+        fetch(link.href, { method: 'HEAD', mode: 'no-cors' })
+            .then(() => {
+                isReachable = true;
+                checked = true;
+            })
+            .catch(() => {
+                fetch(link.href, { method: 'GET' })
+                    .then(response => {
+                        isReachable = response.ok;
+                        checked = true;
+                        if (!isReachable) showError();
+                    })
+                    .catch(() => {
+                        isReachable = false;
+                        checked = true;
+                        showError();
+                    });
+            });
+    }
+
+    link.addEventListener('click', function (e) {
+        if (checked) {
+            if (!isReachable) {
+                showError();
+                return false;
+            }
+            return true;
+        }
+
+        checkLink();
+
+        return true;
+    });
+});
 </script>
 
 </body>
