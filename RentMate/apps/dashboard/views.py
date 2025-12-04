@@ -517,23 +517,28 @@ def home_view(request):
         # Count active tenants
         active_tenant_count = Tenant.objects.filter(status="Active",assigned_landlord=request.user).count()
 
-        # Calculate monthly revenue
+        # Calculate monthly revenue from this landlord's tenants only
         current_month = date.today().month
         current_year = date.today().year
         monthly_revenue = Payment.objects.filter(
+            tenant__assigned_landlord=request.user,  # Filter by landlord's tenants
             status="Approved",
             date_verified__month=current_month,
             date_verified__year=current_year
         ).aggregate(total=Sum('amount'))['total'] or 0
 
-        # Count leases ending this month
+        # Count leases ending this month for this landlord's tenants
         lease_renewal_count = Tenant.objects.filter(
+            assigned_landlord=request.user,  # Filter by landlord
             lease_end__month=current_month,
             lease_end__year=current_year
         ).count()
 
-        # Count payments needing verification
-        payment_count = Payment.objects.filter(status="Pending").count()
+        # Count payments needing verification for this landlord's tenants
+        payment_count = Payment.objects.filter(
+            tenant__assigned_landlord=request.user,  # Filter by landlord's tenants
+            status="Pending"
+        ).count()
 
         # Maintenance requests
         requests = MaintenanceRequest.objects.filter(requester__assigned_landlord=request.user).order_by('-date_requested')
