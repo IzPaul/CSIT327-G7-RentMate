@@ -149,14 +149,14 @@
                     </div>
                     <div class="form-group">
                         <label>Lease Start</label>
-                        <input type="date" name="lease_start" value="{{ form.lease_start.value|default_if_none:'' }}" required>
+                        {{ form.lease_start }}
                         {% if form.lease_start.errors %}
                             <div class="error-message">{{ form.lease_start.errors.0 }}</div>
                         {% endif %}
                     </div>
                     <div class="form-group">
                         <label>Lease End</label>
-                        <input type="date" name="lease_end" value="{{ form.lease_end.value|default_if_none:'' }}" required>
+                        {{ form.lease_end }}
                         {% if form.lease_end.errors %}
                             <div class="error-message">{{ form.lease_end.errors.0 }}</div>
                         {% endif %}
