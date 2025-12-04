@@ -82,8 +82,8 @@ class MonthlyBilling(models.Model):
         ("Overdue", "Overdue"),
     ]
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="monthly_bills")
-    bill_month = models.IntegerField()  # 1-12
-    bill_year = models.IntegerField()
+    bill_month = models.IntegerField(db_column='billing_month')  # 1-12 (db column is billing_month)
+    bill_year = models.IntegerField(db_column='billing_year')
     due_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Unpaid")
