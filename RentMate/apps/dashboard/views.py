@@ -374,6 +374,7 @@ def tenant_payment(request):
         return redirect('tenant_login')
 
     tenant = Tenant.objects.get(id=tenant_id)
+    payments = Payment.objects.filter(tenant=tenant).order_by('-created_at')
 
     if request.method == 'POST':
         form = PaymentForm(request.POST)
@@ -393,6 +394,7 @@ def tenant_payment(request):
     return render(request, 'home_app_tenant/tenant-payment.html', {
         'form': form,
         'tenant': tenant,
+        'payments': payments,
     })
 
 
