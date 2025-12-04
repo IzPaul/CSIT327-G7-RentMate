@@ -1,14 +1,9 @@
-/* ============================================= */
-/*  PAYMENTS TABLE – DEDICATED SPACING STYLES    */
-/*  Only spacing/padding improvements – nothing else changed */
-/* ============================================= */
-
 .maintenance-table-container {
     background-color: #3a3a3a;
     border-radius: 16px;
     box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
     margin-top: 20px;
-    max-height: 75vh;                    /* Slightly more breathing room */
+    max-height: 75vh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -17,7 +12,7 @@
 .maintenance-table-wrapper {
     overflow-y: auto;
     overflow-x: hidden;
-    max-height: calc(75vh - 72px);        /* Adjusted to new header height */
+    max-height: calc(75vh - 72px);
 }
 
 .maintenance-table {
@@ -25,7 +20,7 @@
     border-collapse: separate !important;
     border-spacing: 0;
     color: #f1f1f1;
-    font-size: 14.5px;                   /* Slightly larger for readability */
+    font-size: 14.5px;
     table-layout: fixed;
 }
 
@@ -39,9 +34,8 @@
 .maintenance-table th:nth-child(8),  .maintenance-table td:nth-child(8)  { width: 10%; } /* Date Verified */
 .maintenance-table th:nth-child(9),  .maintenance-table td:nth-child(9)  { width: 14%; } /* Action */
 
-/* Header – more comfortable height and padding */
 .maintenance-table thead th {
-    padding: 22px 24px;                  /* Increased vertical + horizontal padding */
+    padding: 22px 24px;
     font-weight: 600;
     font-size: 13.5px;
     text-transform: uppercase;
@@ -49,39 +43,33 @@
     color: white;
 }
 
-/* Body rows – better vertical rhythm */
 .maintenance-table tbody td {
-    padding: 22px 24px;                  /* Same generous padding as header for alignment */
+    padding: 22px 24px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    vertical-align: middle;              /* Perfect vertical centering */
+    vertical-align: middle;
 }
 
-/* Action column – keep button nicely centered */
 .maintenance-table td:last-child {
     text-align: center;
-    padding: 18px 24px;                  /* Slightly less top/bottom to balance button */
+    padding: 18px 24px;
 }
 
-/* Status badge inside table */
 .maintenance-table .status {
-    padding: 9px 18px;                   /* More breathing room inside badge */
+    padding: 9px 18px;
     font-size: 13px;
 }
 
-/* Approve button – better proportions */
 .maintenance-table .btn-update {
-    padding: 10px 24px;                  /* Wider, taller, more clickable */
+    padding: 10px 24px;
     font-size: 14px;
     min-width: 100px;
 }
 
-/* No data row – more spacious */
 .maintenance-table .no-data {
-    padding: 60px 0;                     /* Much more vertical breathing room when empty */
+    padding: 60px 0;
     font-size: 17px;
 }
 
-/* Hover effect – keep existing but make transform subtler */
 .maintenance-table tbody tr:hover {
     background-color: #383838;
     transform: translateY(-2px);
@@ -93,13 +81,12 @@
     transform: translateY(-2px);
 }
 
-/* Optional: improve header sticky shadow */
 .maintenance-table thead {
     position: sticky;
     top: 0;
     z-index: 5;
     background: linear-gradient(135deg, #4f63f2, #3746b6);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);   /* Subtle shadow when scrolling */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .truncate-10 {
