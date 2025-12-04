@@ -17,6 +17,7 @@ from .forms import TenantRegisterForm, MaintenanceRequestForm, LandlordMaintenan
 from .models import Tenant, MaintenanceRequest, Payment, MonthlyBilling
 from django.views.decorators.cache import never_cache
 from dateutil.relativedelta import relativedelta
+import os
 
 
 # --- LANDLORD SIDE ---
@@ -107,29 +108,32 @@ def tenant_list_view(request):
 import threading
 
 class EmailThread(threading.Thread):
-    def __init__(self, subject, message, from_email, recipient_list):
+    def __init__(self, subject, html_content, from_email, to_emails):
         self.subject = subject
-        self.message = message
+        self.html_content = html_content
         self.from_email = from_email
-        self.recipient_list = recipient_list
+        self.to_emails = to_emails
         threading.Thread.__init__(self)
 
     def run(self):
         try:
-            # Create SendGrid email
-            mail = Mail(
+            # Create SendGrid email message
+            message = Mail(
                 from_email=self.from_email,
-                to_emails=self.recipient_list,
+                to_emails=self.to_emails,
                 subject=self.subject,
-                plain_text_content=self.message
+                html_content=self.html_content
             )
             
             # Send via SendGrid API
-            sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
-            response = sg.send(mail)
-            print(f"Email sent successfully. Status code: {response.status_code}")
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            print(f"Email sent successfully!")
+            print(f"Status Code: {response.status_code}")
+            print(f"Response Body: {response.body}")
+            print(f"Response Headers: {response.headers}")
         except Exception as e:
-            print(f"Error sending email in background: {e}")
+            print(f"Error sending email: {e}")
 
 def tenant_register(request):
     if not request.user.is_authenticated:
@@ -152,22 +156,47 @@ def tenant_register(request):
             
             # Send email in background to avoid timeout
             email_subject = 'Your Tenant Account - RentMate'
-            email_message = f"""
-Hi {tenant.first_name},
-
-Your account has been created.
-
-Email: {tenant.email}
-Temporary Password: {temp_password}
-
-Please log in at: [https://rentmate-h3m7.onrender.com/home/tenant/login/]
-
-Thank you,
-RentMate Team
-"""
+            html_content = f"""
+            <html>
+                <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                    <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+                        <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                            Welcome to RentMate!
+                        </h2>
+                        <p>Hi <strong>{tenant.first_name}</strong>,</p>
+                        <p>Your tenant account has been successfully created. Below are your login credentials:</p>
+                        
+                        <div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #3498db; margin: 20px 0;">
+                            <p style="margin: 5px 0;"><strong>Email:</strong> {tenant.email}</p>
+                            <p style="margin: 5px 0;"><strong>Temporary Password:</strong> {temp_password}</p>
+                        </div>
+                        
+                        <p>Please log in using the link below:</p>
+                        <p style="text-align: center; margin: 30px 0;">
+                            <a href="https://rentmate-h3m7.onrender.com/home/tenant/login/" 
+                               style="background-color: #3498db; color: white; padding: 12px 30px; 
+                               text-decoration: none; border-radius: 5px; display: inline-block;">
+                                Login to Your Account
+                            </a>
+                        </p>
+                        
+                        <p style="color: #e74c3c; font-size: 14px;">
+                            <strong>Important:</strong> For security reasons, you will be required to change your password on first login.
+                        </p>
+                        
+                        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+                        
+                        <p style="color: #7f8c8d; font-size: 12px;">
+                            Thank you for using RentMate!<br>
+                            If you have any questions, please contact your landlord.
+                        </p>
+                    </div>
+                </body>
+            </html>
+            """
             EmailThread(
                 email_subject,
-                email_message,
+                html_content,
                 settings.DEFAULT_FROM_EMAIL,
                 [tenant.email]
             ).start()

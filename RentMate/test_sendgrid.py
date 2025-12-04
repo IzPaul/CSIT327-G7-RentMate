@@ -1,5 +1,6 @@
 """
 Test script to verify SendGrid email functionality
+Following SendGrid's official Python documentation
 """
 import os
 import django
@@ -8,24 +9,29 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'RentMateProject.settings')
 django.setup()
 
-from django.conf import settings
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 def test_sendgrid_email():
-    """Send a test email using SendGrid"""
+    """Send a test email using SendGrid following official documentation"""
+    
+    # Create HTML email message
+    message = Mail(
+        from_email='rrentmate@gmail.com',  # Your verified sender
+        to_emails='test@example.com',  # Replace with your test email
+        subject='Sending with Twilio SendGrid is Fun',
+        html_content='<strong>and easy to do anywhere, even with Python</strong>'
+    )
+    
     try:
-        message = Mail(
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to_emails='test@example.com',  # Replace with your test email
-            subject='RentMate - SendGrid Test Email',
-            plain_text_content='This is a test email sent via SendGrid API from RentMate!'
-        )
+        # Initialize SendGrid client with API key from environment
+        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
         
-        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        # Send the email
         response = sg.send(message)
         
-        print(f"✅ Email sent successfully!")
+        # Print success information
+        print("✅ Email sent successfully!")
         print(f"Status Code: {response.status_code}")
         print(f"Response Body: {response.body}")
         print(f"Response Headers: {response.headers}")
@@ -34,8 +40,11 @@ def test_sendgrid_email():
         print(f"❌ Error sending email: {e}")
 
 if __name__ == "__main__":
-    print("Testing SendGrid email configuration...")
-    print(f"Using API Key: {settings.SENDGRID_API_KEY[:10]}...")
-    print(f"From Email: {settings.DEFAULT_FROM_EMAIL}")
-    print("-" * 50)
+    print("=" * 60)
+    print("Testing SendGrid Email Configuration")
+    print("=" * 60)
+    print(f"Using API Key: {os.environ.get('SENDGRID_API_KEY', 'NOT SET')[:15]}...")
+    print(f"From Email: rrentmate@gmail.com")
+    print("-" * 60)
     test_sendgrid_email()
+    print("=" * 60)
