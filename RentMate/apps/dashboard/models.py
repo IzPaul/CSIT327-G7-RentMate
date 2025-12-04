@@ -73,3 +73,37 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.amount} ({self.method}) - {self.status}"
+
+
+class MonthlyBilling(models.Model):
+    STATUS_CHOICES = [
+        ("Unpaid", "Unpaid"),
+        ("Paid", "Paid"),
+        ("Overdue", "Overdue"),
+    ]
+    
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="monthly_bills")
+    billing_month = models.DateField()  # Actual column name in DB
+    rent_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    water_bill = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    electricity_bill = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    other_charges = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    balance = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Unpaid")
+    due_date = models.DateField()
+    notes = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-billing_month']
+        db_table = 'dashboard_monthlybilling'
+
+    def __str__(self):
+        return f"{self.tenant.first_name} {self.tenant.last_name} - {self.billing_month.strftime('%B %Y')} - {self.status}"
+    
+    def get_bill_for_display(self):
+        """Returns formatted month and year for display"""
+        return self.billing_month.strftime("%B %Y")

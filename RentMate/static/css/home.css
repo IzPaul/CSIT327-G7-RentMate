@@ -10,7 +10,8 @@
             color: white;
             display: flex;
             height: 100vh;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         /* Sidebar Navigation */
@@ -189,10 +190,12 @@
             font-size: 14px;
         }
 
-        .card-subtitle.green {
+        .card-subtitle.red {
+            color: #fca5a5;
+        }
+        .card-title.green {
             color: #4ade80;
         }
-
 
         /* TENANT PROFILE PAGE  */
         .tenant-profile-layout {
@@ -427,8 +430,13 @@
         }
 
         .status-badge.pending {
-            background-color: #666;
+            background-color: #fedb7f;
             color: white;
+        }
+
+        .status-badge.canceled {
+            background-color: #dc3545;
+            color: white ;
         }
 
         .request-actions {
@@ -758,4 +766,26 @@
                 grid-template-columns: 1fr;
             }
         }
->>>>>>> 88c06dd1eacee0d8e26eac51bc601c3154e6174d
+/* ADDED LOGOUT STYLES */
+.logout-section {
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.logout-btn { 
+    width: 100%;
+    padding: 12px 0;
+    background-color: #4169E1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #315AC1;
+    box-shadow: 0 4px 12px rgba(65,105,225,0.35);
+}

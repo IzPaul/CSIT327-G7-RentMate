@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import diagnostic_views
 
 urlpatterns = [
     path('', views.home_view, name='home'),
@@ -37,9 +38,12 @@ urlpatterns = [
     #LandLord Proof of Payments
     path('landlord/payments-list/', views.landlord_payments_list_view, name='landlord_payments_list'),
     path('landlord/payments-update/<int:payment_id>/', views.landlord_payments_update_view, name='landlord_payments_update'),
-    path('landlord/payment-approve/<int:payment_id>/', views.approve_payment, name='approve_payment'),
-
+    path('landlord/payment-approve/<int:payment_id>', views.approve_payment, name='approve_payment'),
+    
     #LandLord Leases
     path('landlord/leases/', views.landlord_leases_view, name='landlord_leases'),
     path('landlord/lease-details/<int:tenant_id>/', views.landlord_lease_details_view, name='landlord_lease_details'),
+    
+    # Diagnostic (temporary - for checking database schema)
+    path('diagnostic/check-schema/', diagnostic_views.check_database_schema, name='check_schema'),
 ]

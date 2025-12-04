@@ -13,11 +13,52 @@ from decimal import Decimal
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from .forms import TenantRegisterForm, MaintenanceRequestForm, LandlordMaintenanceUpdateForm, PaymentForm
-from .models import Tenant, MaintenanceRequest, Payment
+from .models import Tenant, MaintenanceRequest, Payment, MonthlyBilling
 from django.views.decorators.cache import never_cache
+from dateutil.relativedelta import relativedelta
 
 
 # --- LANDLORD SIDE ---
+
+def generate_monthly_billing_records(tenant):
+    """
+    Generate monthly billing records for a tenant from lease_start to lease_end.
+    Each record represents one month's rent due on the 1st of that month.
+    """
+    current_date = tenant.lease_start
+    
+    while current_date <= tenant.lease_end:
+        # billing_month is the 1st of each month
+        billing_month_date = date(current_date.year, current_date.month, 1)
+        
+        # Due date is the 1st of the month
+        due_date = date(current_date.year, current_date.month, 1)
+        
+        # Calculate total: rent + utilities + other charges
+        total = tenant.rent
+        balance = total
+        
+        # Create billing record if it doesn't exist
+        MonthlyBilling.objects.get_or_create(
+            tenant=tenant,
+            billing_month=billing_month_date,
+            defaults={
+                'rent_amount': tenant.rent,
+                'water_bill': Decimal('0.00'),
+                'electricity_bill': Decimal('0.00'),
+                'other_charges': Decimal('0.00'),
+                'total_amount': total,
+                'amount_paid': Decimal('0.00'),
+                'balance': balance,
+                'due_date': due_date,
+                'status': 'Unpaid',
+                'notes': ''
+            }
+        )
+        
+        # Move to next month
+        current_date = current_date + relativedelta(months=1)
+
 
 @login_required(login_url='landlord_login')
 def tenant_list_view(request):
@@ -62,6 +103,28 @@ def tenant_list_view(request):
     })
 
 
+import threading
+
+class EmailThread(threading.Thread):
+    def __init__(self, subject, message, from_email, recipient_list):
+        self.subject = subject
+        self.message = message
+        self.from_email = from_email
+        self.recipient_list = recipient_list
+        threading.Thread.__init__(self)
+
+    def run(self):
+        try:
+            send_mail(
+                self.subject,
+                self.message,
+                self.from_email,
+                self.recipient_list,
+                fail_silently=False
+            )
+        except Exception as e:
+            print(f"Error sending email in background: {e}")
+
 def tenant_register(request):
     if not request.user.is_authenticated:
         return redirect('landlord_login')
@@ -76,10 +139,14 @@ def tenant_register(request):
             tenant.status = 'Inactive'
             tenant.save()
 
+            # Generate monthly billing records
+            generate_monthly_billing_records(tenant)
+
             temp_password = form.cleaned_data['password']
-            send_mail(
-                'Your Tenant Account - RentMate',
-                f"""
+            
+            # Send email in background to avoid timeout
+            email_subject = 'Your Tenant Account - RentMate'
+            email_message = f"""
 Hi {tenant.first_name},
 
 Your account has been created.
@@ -87,15 +154,17 @@ Your account has been created.
 Email: {tenant.email}
 Temporary Password: {temp_password}
 
-Please log in at: [http://127.0.0.1:8000/home/tenant/login/]
+Please log in at: [https://rentmate-h3m7.onrender.com/home/tenant/login/]
 
 Thank you,
 RentMate Team
-""",
+"""
+            EmailThread(
+                email_subject,
+                email_message,
                 settings.EMAIL_HOST_USER,
-                [tenant.email],
-                fail_silently=False
-            )
+                [tenant.email]
+            ).start()
 
             messages.success(request, 'Tenant created successfully! Credentials sent via email.')
             return redirect('tenant_list')
@@ -535,6 +604,25 @@ def approve_payment(request,payment_id):
     payment.status = "Approved"
     payment.date_verified = datetime.now().date()
     payment.save()
+    
+    # Update the corresponding monthly bill to "Paid"
+    # Use the payment's date_verified to determine which month to mark as paid
+    if payment.date_verified:
+        try:
+            # billing_month is stored as the 1st of each month
+            billing_month_date = date(payment.date_verified.year, payment.date_verified.month, 1)
+            monthly_bill = MonthlyBilling.objects.get(
+                tenant=payment.tenant,
+                billing_month=billing_month_date
+            )
+            monthly_bill.status = "Paid"
+            monthly_bill.amount_paid = monthly_bill.total_amount
+            monthly_bill.balance = Decimal('0.00')
+            monthly_bill.save()
+        except MonthlyBilling.DoesNotExist:
+            # If no matching monthly bill exists, we can just skip this step
+            pass
+    
     return redirect('landlord_payments_list')
 
 #Landlord - List of Leases View
@@ -601,10 +689,12 @@ def landlord_tenant_profile_view(request, tenant_id):
     approved_payments = Payment.objects.filter(tenant=tenant, status="Approved").order_by('date_verified')
     activities = Payment.objects.filter(tenant=tenant).exclude(status="Approved").order_by('created_at')
     requests = MaintenanceRequest.objects.filter(requester=tenant).order_by('date_requested')
+    monthly_bills = MonthlyBilling.objects.filter(tenant=tenant).order_by('billing_month')
 
     return render(request, 'home_app/landlord-tenant-profile.html', {
         "tenant": tenant,
         "approved_payments": approved_payments,
         "activities": activities,
         "requests": requests,
+        "monthly_bills": monthly_bills,
     })

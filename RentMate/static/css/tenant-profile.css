@@ -883,3 +883,26 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* ADDED LOGOUT STYLES */
+.logout-section {
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.logout-btn { 
+    width: 100%;
+    padding: 12px 0;
+    background-color: #4169E1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #315AC1;
+    box-shadow: 0 4px 12px rgba(65,105,225,0.35);
+}

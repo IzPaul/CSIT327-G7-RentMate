@@ -26,7 +26,7 @@
                 Tenants
             </a>
             <a href="{% url 'landlord_payments_list' %}" class="nav-item">
-              <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
                 <path d="M12 4 H52 V44 L44 56 L32 44 L20 56 L12 44 Z" fill="#E0E0E0" stroke="#333" stroke-width="2"/>
                 <line x1="18" y1="16" x2="28" y2="16" stroke="#666" stroke-width="2"/>
                 <line x1="32" y1="16" x2="50" y2="16" stroke="#666" stroke-width="2"/>
@@ -171,7 +171,7 @@
                                 <td class="status {{ tenant.status|lower }}">{{ tenant.status }}</td>
                                 <td class="actions-cell">
                                     <a href="{% url 'delete_tenant' tenant.id %}" class="btn-delete"
-                                       onclick="return confirm('Are you sure you want to delete this tenant?')">Delete</a>
+                                    onclick="return confirm('Are you sure you want to delete this tenant?')">Delete</a>
                                 </td>
                             </tr>
                         {% empty %}
