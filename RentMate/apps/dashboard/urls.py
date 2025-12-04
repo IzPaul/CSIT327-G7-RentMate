@@ -8,6 +8,7 @@ urlpatterns = [
     path('tenant/register/', views.tenant_register, name='tenant_register'),
     path('tenant/edit/<int:tenant_id>/', views.edit_tenant, name='edit_tenant'),
     path('tenant/delete/<int:tenant_id>/', views.delete_tenant, name='delete_tenant'),
+    path('tenant/deactivate/<int:tenant_id>/', views.deactivate_tenant, name='deactivate_tenant'),
 
     # Tenant Dashboard
     path('tenant-home/', views.tenant_home, name='tenant_home'),

@@ -232,6 +232,14 @@ def delete_tenant(request, tenant_id):
     messages.success(request, 'Tenant deleted successfully.')
     return redirect('tenant_list')
 
+def deactivate_tenant(request, tenant_id):
+    tenant = get_object_or_404(Tenant, id=tenant_id, assigned_landlord=request.user)
+    tenant.is_active = False
+    tenant.status = "Terminated"
+    tenant.save()
+    messages.success(request, 'Tenant deactivated successfully.')
+    return redirect('tenant_list')
+
 
 # --- TENANT LOGIN, LOGOUT & PASSWORD CHANGE ---
 

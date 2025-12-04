@@ -187,8 +187,8 @@
                             <td class="status {{ tenant.payment_status|lower }}">{{ tenant.payment_status }}</td>
                             <td class="status {{ tenant.status|lower }}">{{ tenant.status }}</td>
                             <td class="actions-cell">
-                                <a href="{% url 'delete_tenant' tenant.id %}" class="btn-delete"
-                                    onclick="return confirm('Are you sure you want to delete this tenant?')">Delete</a>
+                                <a href="{% url 'deactivate_tenant' tenant.id %}" class="btn-delete"
+                                    onclick="return confirm('Are you sure you want to deactivate this tenant?')">Deactivate</a>
                             </td>
                         </tr>
                         {% empty %}
