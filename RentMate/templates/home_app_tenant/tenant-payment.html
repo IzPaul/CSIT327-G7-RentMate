@@ -137,13 +137,22 @@
                 </div>
 
                 <div class="payment-info-card">
-                    <h3>Payment Reminders</h3>
-                    <ul>
-                        <li>Double-check the amount and reference number before submitting.</li>
-                        <li>Keep your transaction receipt — the landlord may request a copy.</li>
-                        <li>Contact support immediately if you enter incorrect information.</li>
-                    </ul>
-                </div>
+                    <h3>Payment History</h3>
+                <ul>
+                    {% if payments %}
+                    {% for p in payments %}
+                <li>
+                    <strong>{{ p.title }}</strong><br>
+                    {{ p.created_at|date:"M d, Y" }} -
+                    ₱{{ p.amount }} -
+                    {{ p.get_status_display|default:p.status }}
+                </li>
+                    {% endfor %}
+                    {% else %}
+                    <li>No payments yet.</li>
+                    {% endif %}
+                </ul>
+            </div>
             </div>
         </div>
     </div>
