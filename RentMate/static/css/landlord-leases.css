@@ -1,0 +1,108 @@
+/* static/css/leases.css */
+
+.leases-table-container {
+    background-color: #3a3a3a;
+    border-radius: 16px;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+    margin-top: 20px;
+    max-height: 70vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.leases-table-container table.leases-table {
+    width: 100%;
+    border-collapse: separate !important;
+    border-spacing: 0;
+    color: #f1f1f1;
+    font-size: 14px;
+}
+
+.leases-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(135deg, #4f63f2, #3746b6);
+}
+
+.leases-table th,
+.leases-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    text-align: left;
+}
+
+.leases-table th:nth-child(1), .leases-table td:nth-child(1) { width: 10% !important; }
+.leases-table th:nth-child(2), .leases-table td:nth-child(2) { width: 20% !important; }
+.leases-table th:nth-child(3), .leases-table td:nth-child(3) { width: 12% !important; }
+.leases-table th:nth-child(4), .leases-table td:nth-child(4) { width: 14% !important; }
+.leases-table th:nth-child(5), .leases-table td:nth-child(5) { width: 20% !important; }
+.leases-table th:nth-child(6), .leases-table td:nth-child(6) { width: 24% !important; }
+
+.leases-table tbody tr {
+    background-color: #2f2f2f;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.leases-table tbody tr:hover {
+    background-color: #383838 !important;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.leases-table .status {
+    padding: 8px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    min-width: 80px;
+    text-align: center;
+}
+
+.leases-table .status.paid { background: rgba(34, 197, 94, 0.25); color: #86efac; }
+.leases-table .status.overdue { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+.leases-table .status.pending, .status.partial { background: rgba(255, 193, 7, 0.2); color: #fedb7f; }
+
+.leases-table .no-data {
+    text-align: center;
+    padding: 50px 20px;
+    font-size: 16px;
+    color: #888;
+}
+
+.leases-table thead th:first-child { border-top-left-radius: 16px; }
+.leases-table thead th:last-child { border-top-right-radius: 16px; }
+
+.btn-edit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #5c7cff, #3b5bdb);
+    color: white;
+    text-decoration: none;
+    min-width: 140px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(92, 124, 255, 0.3);
+}
+
+.btn-edit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(92, 124, 255, 0.5);
+}
+
+.stat-item.btn-edit {
+    height: 100%;
+    min-height: 70px;
+    padding: 16px 32px;
+    border-radius: 16px;
+    font-size: 2.0rem;
+    font-weight: 650;
+}
+
+
+.stat-item.btn-edit{
+    justify-content:center;
+    align-items: center;
+}
