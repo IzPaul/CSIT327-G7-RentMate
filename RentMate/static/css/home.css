@@ -67,7 +67,7 @@
 
         /* Main Content */
         .main-content {
-            overflow:hidden;
+            overflow: auto;
             display: flex;
             flex: 1;
             flex-direction:column;
@@ -91,12 +91,11 @@
             gap: 15px;
         }
 
-        .logo-circle {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #4169E1 0%, #6366f1 100%);
-            border-radius: 50%;
-        }
+        .logo-image {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+}
 
         .logo-text {
             font-size: 28px;
@@ -131,11 +130,19 @@
         }
 
         .user-avatar-header {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
             border-radius: 50%;
             cursor: pointer;
+            color: black;
+            font-weight: 600;
+            font-size: 16px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
  /*---------------------------------------- END OF CONSISTENT PAGE COMPONENTS----------------------------------------------- */
 
@@ -377,6 +384,9 @@
             background-color: #3a3a3a;
             padding: 30px;
             border-radius: 12px;
+            max-height: 700px;      /* bigger box */
+            display: flex;
+            flex-direction: column;
         }
 
         .maintenance-section h2 {
@@ -384,6 +394,16 @@
             margin-bottom: 25px;
         }
 
+        .maintenance-list {
+            margin-top: 10px;
+            overflow-y: auto;
+        }
+
+        .maintenance-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+    
         .request-item {
             background-color: #4a4a4a;
             padding: 20px;
@@ -420,17 +440,17 @@
         }
 
         .status-badge.resolved {
-            background-color: #4ade80;
-            color: #1a1a1a;
+            background-color: #10b981;
+            color: white;
         }
 
         .status-badge.approved {
             background-color: #38bdf8;
-            color: #1a1a1a;
+            color: white;
         }
 
         .status-badge.pending {
-            background-color: #fedb7f;
+            background-color: #f59e0b;
             color: white;
         }
 
@@ -789,3 +809,4 @@
     background-color: #315AC1;
     box-shadow: 0 4px 12px rgba(65,105,225,0.35);
 }
+

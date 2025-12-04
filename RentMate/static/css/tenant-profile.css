@@ -130,11 +130,19 @@
         }
 
         .user-avatar-header {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
             border-radius: 50%;
             cursor: pointer;
+            color: black;
+            font-weight: 600;
+            font-size: 16px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
  /*---------------------------------------- END OF CONSISTENT PAGE COMPONENTS----------------------------------------------- */
 
