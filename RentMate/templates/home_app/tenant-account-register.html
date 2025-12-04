@@ -98,7 +98,7 @@
                     </div>
                     <div class="form-group">
                         <label>Last Name</label>
-                        <input type="text" name="last_name" value="{{ form.last_name.value|default_if_none:'' }}" required>
+                        <input type="text" id="last_name" name="last_name" value="{{ form.last_name.value|default_if_none:'' }}" required>
                         {% if form.last_name.errors %}
                             <div class="error-message">{{ form.last_name.errors.0 }}</div>
                         {% endif %}
@@ -120,12 +120,39 @@
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="text" name="password" value="{{ form.password.value|default_if_none:'' }}" 
-                           placeholder="{% if edit_mode %}Leave blank to keep current password{% else %}Default: LastName123456{% endif %}">
+                    <input type="text" id="password" name="password" value="{{ form.password.value|default_if_none:'' }}" 
+                           placeholder="Auto-generated from Last Name" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+                    <small style="color: #666; font-size: 12px;">Format: LastName123456</small>
                     {% if form.password.errors %}
                         <div class="error-message">{{ form.password.errors.0 }}</div>
                     {% endif %}
                 </div>
+
+                <script>
+                    // Auto-generate password based on Last Name
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const lastNameInput = document.getElementById('last_name');
+                        const passwordInput = document.getElementById('password');
+                        
+                        // Function to generate password
+                        function generatePassword() {
+                            const lastName = lastNameInput.value.trim();
+                            if (lastName) {
+                                // Format: LastName123456
+                                passwordInput.value = lastName + '123456';
+                            } else {
+                                passwordInput.value = '';
+                            }
+                        }
+                        
+                        // Generate password on page load if last name exists
+                        generatePassword();
+                        
+                        // Update password when last name changes
+                        lastNameInput.addEventListener('input', generatePassword);
+                        lastNameInput.addEventListener('change', generatePassword);
+                    });
+                </script>
                 <h3>Renting Information</h3>
                 <div class="form-row">
                     <div class="form-group">
