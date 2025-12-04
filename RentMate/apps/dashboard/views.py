@@ -276,14 +276,7 @@ def tenant_home(request):
 
     today = datetime.now().date()
     days_remaining = (tenant.lease_end - today).days
-    if days_remaining > 30:
-        months = days_remaining // 30
-        remaining_days = days_remaining % 30
-        lease_remaining = f"{months} month{'s' if months > 1 else ''}"
-        if remaining_days > 0:
-            lease_remaining += f" and {remaining_days} day{'s' if remaining_days > 1 else ''}"
-    else:
-        lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
+    lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
 
     lease_duration_months = (tenant.lease_end - tenant.lease_start).days // 30
     initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
@@ -456,14 +449,7 @@ def tenant_lease_view(request):
 
     today = datetime.now().date()
     days_remaining = (tenant.lease_end - today).days
-    if days_remaining > 30:
-        months = days_remaining // 30
-        remaining_days = days_remaining % 30
-        lease_remaining = f"{months} month{'s' if months > 1 else ''}"
-        if remaining_days > 0:
-            lease_remaining += f" and {remaining_days} day{'s' if remaining_days > 1 else ''}"
-    else:
-        lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
+    lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
 
     lease_duration_months = (today - tenant.lease_start).days // 30
     initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
@@ -660,14 +646,7 @@ def landlord_lease_details_view(request, tenant_id):
 
     today = datetime.now().date()
     days_remaining = (tenant.lease_end - today).days
-    if days_remaining > 30:
-        months = days_remaining // 30
-        remaining_days = days_remaining % 30
-        lease_remaining = f"{months} month{'s' if months > 1 else ''}"
-        if remaining_days > 0:
-            lease_remaining += f" and {remaining_days} day{'s' if remaining_days > 1 else ''}"
-    else:
-        lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
+    lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
 
     lease_duration_months = (today - tenant.lease_start).days // 30
     initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
