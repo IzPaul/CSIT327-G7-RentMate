@@ -477,7 +477,7 @@ def tenant_lease_view(request):
     if not tenant_id:
         messages.info(request, "Please log in to continue")
         return redirect('tenant_login')
-    tenant = get_object_or_404(Tenant, id=tenant_id, assigned_landlord=request.user)
+    tenant = get_object_or_404(Tenant, id=tenant_id)
 
     today = datetime.now().date()
     days_remaining = (tenant.lease_end - today).days
