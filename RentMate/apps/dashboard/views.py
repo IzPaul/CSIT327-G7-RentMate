@@ -6,6 +6,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.hashers import check_password, make_password
 from django.db.models import Sum
+from collections import namedtuple
 from datetime import datetime
 from datetime import date
 from decimal import Decimal
@@ -400,14 +401,11 @@ def tenant_lease_view(request):
     total_paid = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
     outstanding_balance = initial_balance - total_paid
 
-    days_remaining_raw = days_remaining
 
     return render(request, 'home_app_tenant/tenant-lease.html',{
         "tenant": tenant,
         "lease_remaining": lease_remaining,
         "outstanding_balance": outstanding_balance,
-        "days_remaining": days_remaining,
-        'today_timestamp': int(datetime.now().timestamp()),
     })
 
 
@@ -538,6 +536,62 @@ def approve_payment(request,payment_id):
     payment.date_verified = datetime.now().date()
     payment.save()
     return redirect('landlord_payments_list')
+
+#Landlord - List of Leases View
+@login_required(login_url='landlord_login')
+def landlord_leases_view(request):
+    tenants = Tenant.objects.filter(assigned_landlord=request.user).order_by('unit').prefetch_related('payments').all()
+
+    LeaseRow = namedtuple('LeaseRow', ['tenant', 'outstanding_balance'])
+
+    lease_data = []
+    today = datetime.now().date()
+
+    for tenant in tenants:
+        if not tenant.lease_start or not tenant.lease_end:
+            outstanding_balance = Decimal('0.00')
+        else:
+            lease_duration_months = (today - tenant.lease_start).days // 30
+            months_to_charge = 1 if lease_duration_months == 0 else lease_duration_months
+            initial_balance = tenant.rent * Decimal(months_to_charge)
+
+            total_paid = tenant.payments.filter(status="Approved").aggregate(
+                total=Sum('amount')
+            )['total'] or Decimal('0.00')
+
+            outstanding_balance = initial_balance - total_paid
+        lease_data.append(LeaseRow(tenant=tenant, outstanding_balance=outstanding_balance))
+
+    return render(request, 'home_app/landlord-leases.html', {
+        'lease_data': lease_data,
+    })
+
+@login_required(login_url='landlord_login')
+def landlord_lease_details_view(request, tenant_id):
+    tenant = get_object_or_404(Tenant, id=tenant_id)
+
+    today = datetime.now().date()
+    days_remaining = (tenant.lease_end - today).days
+    if days_remaining > 30:
+        months = days_remaining // 30
+        remaining_days = days_remaining % 30
+        lease_remaining = f"{months} month{'s' if months > 1 else ''}"
+        if remaining_days > 0:
+            lease_remaining += f" and {remaining_days} day{'s' if remaining_days > 1 else ''}"
+    else:
+        lease_remaining = f"{days_remaining} day{'s' if days_remaining > 1 else ''}"
+
+    lease_duration_months = (today - tenant.lease_start).days // 30
+    initial_balance = tenant.rent * Decimal(1 if lease_duration_months == 0 else lease_duration_months)
+    total_paid = tenant.payments.filter(status="Approved").aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    outstanding_balance = initial_balance - total_paid
+
+
+    return render(request, 'home_app/landlord-lease-full-details.html',{
+        "tenant": tenant,
+        "lease_remaining": lease_remaining,
+        "outstanding_balance": outstanding_balance,
+    })
 
 # Landlord - Tenant Profile View
 
