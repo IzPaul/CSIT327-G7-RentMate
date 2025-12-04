@@ -534,18 +534,14 @@ def home_view(request):
             lease_end__year=current_year
         ).count()
 
-        # Count payments needing verification for this landlord's tenants
-        payment_count = Payment.objects.filter(
-            tenant__assigned_landlord=request.user,  # Filter by landlord's tenants
-            status="Pending"
-        ).count()
+        # Count payments needing verification
+        payment_count = Payment.objects.filter(status="Pending", tenant__assigned_landlord=request.user).count()
 
         # Maintenance requests
         requests = MaintenanceRequest.objects.filter(requester__assigned_landlord=request.user).order_by('-date_requested')
         pending_count = requests.filter(request_status='Pending').count()
 
         context = {
-            'payment_count': Payment.objects.filter(status="Pending").count(),
             'active_tenant_count': active_tenant_count,
             'monthly_revenue': monthly_revenue,
             'lease_renewal_count': lease_renewal_count,
