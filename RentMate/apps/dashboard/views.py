@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.hashers import check_password, make_password
@@ -115,13 +116,18 @@ class EmailThread(threading.Thread):
 
     def run(self):
         try:
-            send_mail(
-                self.subject,
-                self.message,
-                self.from_email,
-                self.recipient_list,
-                fail_silently=False
+            # Create SendGrid email
+            mail = Mail(
+                from_email=self.from_email,
+                to_emails=self.recipient_list,
+                subject=self.subject,
+                plain_text_content=self.message
             )
+            
+            # Send via SendGrid API
+            sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+            response = sg.send(mail)
+            print(f"Email sent successfully. Status code: {response.status_code}")
         except Exception as e:
             print(f"Error sending email in background: {e}")
 
@@ -162,7 +168,7 @@ RentMate Team
             EmailThread(
                 email_subject,
                 email_message,
-                settings.EMAIL_HOST_USER,
+                settings.DEFAULT_FROM_EMAIL,
                 [tenant.email]
             ).start()
 
