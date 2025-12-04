@@ -85,24 +85,19 @@
             <div class="card">
                 <div class="card-label">Payment Status</div>
                 <div class="card-title {% if payment_status == 'Unpaid' %}red{% else %}green{% endif %}">{{payment_status}}</div>
-                <div class="card-subtitle">{% if payment_status == "Unpaid" %}Please pay your balance{% endif %}</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Outstanding Balance</div>
+                <div class="card-title">₱{{outstanding_balance}}</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Maintenance Requests</div>
+                <div class="card-title">{{ pending_count }} Pending</div>
             </div>
             <div class="card">
                 <div class="card-label">Lease Ends In</div>
                 <div class="card-title">{{lease_remaining}}</div>
                 <div class="card-subtitle">{{tenant.lease_end}}</div>
-            </div>
-            <div class="card">
-                <div class="card-label">Outstanding Balance</div>
-                <div class="card-title">₱{{outstanding_balance}}</div>
-                <div class="card-subtitle green">+ 2.4% this month</div>
-            </div>
-            <div class="card">
-                <div class="card-label">Maintenance Requests</div>
-                <div class="card-title">{{ requests.count }}</div>
-                <div class="card-subtitle">
-                    {{ pending_count }} Pending • {{ approved_count }} Approved • {{ completed_count }} Completed
-                </div>
             </div>
         </div>
 
